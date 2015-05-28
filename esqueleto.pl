@@ -8,7 +8,7 @@
 tablero(f,c,L) :- length(L,f), allOflenghth(L,c).
 
 allOflenghth([],c).
-allOflenghth(x:L,c) :- length(x,c), allOflenghth(L,c).
+allOflenghth([x|L],c) :- length(x,c), allOflenghth(L,c).
 
 
 %% Ejercicio 2
