@@ -5,15 +5,15 @@
 %% Ejercicio 1
 %% tablero(+Filas,+Columnas,-Tablero) instancia una estructura de tablero en blanco
 %% de Filas x Columnas, con todas las celdas libres.
-tablero(f,c,L) :- length(L,f),allOflenghth(L,c).
+tablero(f,c,L) :- length(L,f), allOflenghth(L,c).
 
 allOflenghth([],c).
-allOflenghth(x:L,c) :- length(x,c),allOflenghth(L,c).
+allOflenghth(x:L,c) :- length(x,c), allOflenghth(L,c).
 
 
 %% Ejercicio 2
 %% ocupar(+Pos,?Tablero) será verdadero cuando la posición indicada esté ocupada.
-ocupar(pos(f,c),T). nth0(f,T,F),nth0(c,F,X), X is ocupada.
+ocupar(pos(f,c),T) :- nth0(f,T,F), nth0(c,F,X), X is ocupada.
 
 
 %% Ejercicio 3
