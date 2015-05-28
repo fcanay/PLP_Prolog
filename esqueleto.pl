@@ -21,12 +21,17 @@ ocupar(pos(f,c),T). nth0(f,T,F),nth0(c,F,X), X is ocupada.
 %% un átomo de la forma pos(F', C') y pos(F',C') sea una celda contigua a
 %% pos(F,C), donde Pos=pos(F,C). Las celdas contiguas puede ser a lo sumo cuatro
 %% dado que el robot se moverá en forma ortogonal.
-vecino(_,_,_).
+vecino(pos(f1,c1),T,V) :- f1 >= 0,c1 >= 0,length(T,f), f1 =< f, last(T,C),length(C,c),c1 =< c, vecinoAux(pos(f1,c1),T,V).
+
+vecinoAux(pos(f1,c1),T,V) :- f1 > 0, F is f1-1,V is pos(F,c).
+vecinoAux(pos(f1,c1),T,V) :- c1 > 0, C is c1-1,V is pos(f1,C).
+vecinoAux(pos(f1,c1),T,V) :- length(T,f), f1 < f, F is f1+1,V is pos(F,c).
+vecinoAux(pos(f1,c1),T,V) :- last(T,L),length(L,c), c1 < c, C is c1+1,V is pos(f1,C).
 
 %% Ejercicio 4
 %% vecinoLibre(+Pos, +Tablero, -PosVecino) idem vecino/3 pero además PosVecino
 %% debe ser una celda transitable (no ocupada) en el Tablero
-vecinoLibre(_,_,_).
+vecinoLibre(pos(f1,c1),T,V) :- vecino(pos(f1,c1),T,V),nth0(f,T,F),nth0(c,F,X),var(X).
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%
