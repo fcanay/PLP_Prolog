@@ -2,10 +2,8 @@
 %% Tablero
 %%%%%%%%%%%%%%%%%%%%%%%%
 
-
 %%AUX
 posValida(pos(f,c),T) :- f >= 0,c >= 0,numFilas(T,F), f =< F, numCol(T,C),c =< C.
-
 
 allOflenghth([],c).
 allOflenghth([x|L],c) :- length(x,c), allOflenghth(L,c).
@@ -22,12 +20,9 @@ casilleroLibre(pos(f,c),T) :- nth0(f,T,F),nth0(c,F,X),var(X).
 %% de Filas x Columnas, con todas las celdas libres.
 tablero(f,c,L) :- length(L,f), allOflenghth(L,c).
 
-
-
 %% Ejercicio 2
 %% ocupar(+Pos,?Tablero) será verdadero cuando la posición indicada esté ocupada.
 ocupar(pos(f,c),T) :- nth0(f,T,F), nth0(c,F,X), X is ocupada.
-
 
 %% Ejercicio 3
 %% vecino(+Pos, +Tablero, -PosVecino) será verdadero cuando PosVecino sea
@@ -35,7 +30,6 @@ ocupar(pos(f,c),T) :- nth0(f,T,F), nth0(c,F,X), X is ocupada.
 %% pos(F,C), donde Pos=pos(F,C). Las celdas contiguas puede ser a lo sumo cuatro
 %% dado que el robot se moverá en forma ortogonal.
 vecino(pos(f,c),T,V) :- posValida(pos(f,c),T), vecinoAux(pos(f,c),T,V).
-
 
 vecinoAux(pos(f,c),T,V) :- f > 0, F is f-1,V is pos(F,c).
 vecinoAux(pos(f,c),T,V) :- c > 0, C is c-1,V is pos(f,C).
@@ -46,7 +40,6 @@ vecinoAux(pos(f,c),T,V) :- numCol(T,C), c < C, C1 is c+1,V is pos(f,C1).
 %% vecinoLibre(+Pos, +Tablero, -PosVecino) idem vecino/3 pero además PosVecino
 %% debe ser una celda transitable (no ocupada) en el Tablero
 vecinoLibre(pos(f,c),T,V) :- vecino(pos(f,c),T,V),casilleroLibre(V,T).
-
 
 %%%%%%%%%%%%%%%%%%%%%%%%
 %% Definicion de caminos
@@ -60,7 +53,10 @@ vecinoLibre(pos(f,c),T,V) :- vecino(pos(f,c),T,V),casilleroLibre(V,T).
 %% Notar que la cantidad de caminos es finita y por ende se tiene que poder recorrer
 %% todas las alternativas eventualmente.
 %% Consejo: Utilizar una lista auxiliar con las posiciones visitadas
-camino(_,_,_,_).
+%%Caso borde donde start = finish, pregunte y me dijeron "Devolve la lista unitaria"
+camino(pos(sx,sy),pos(fx,fy),T,C) :- sx = fx, sy = fy, C is [].
+camino(s,f,T,C) :- vecinoLibre(s,T,X), not(member(X,C)), f = X.
+camino(s,f,T,C) :- vecinoLibre(s,T,X), not(member(X,C)), camino(X,f,T,[s|C]).
 
 %% Ejercicio 6
 %% cantidadDeCaminos(+Inicio, +Fin, +Tablero, ?N) que indique la cantidad de caminos
