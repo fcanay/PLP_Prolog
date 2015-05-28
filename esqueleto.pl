@@ -2,13 +2,23 @@
 %% Tablero
 %%%%%%%%%%%%%%%%%%%%%%%%
 
+
+%%AUX
+posValida(pos(f,c),T) :- f >= 0,c >= 0,numFilas(T,F), f =< F, numCol(T,C),c =< C.
+
+
+allOflenghth([],c).
+allOflenghth([x|L],c) :- length(x,c), allOflenghth(L,c).
+
+numFilas(T,X) :- length(T,X).
+
+numCol(T,X) :- last(T,L),length(L,X).
+
 %% Ejercicio 1
 %% tablero(+Filas,+Columnas,-Tablero) instancia una estructura de tablero en blanco
 %% de Filas x Columnas, con todas las celdas libres.
 tablero(f,c,L) :- length(L,f), allOflenghth(L,c).
 
-allOflenghth([],c).
-allOflenghth([x|L],c) :- length(x,c), allOflenghth(L,c).
 
 
 %% Ejercicio 2
@@ -21,12 +31,13 @@ ocupar(pos(f,c),T) :- nth0(f,T,F), nth0(c,F,X), X is ocupada.
 %% un átomo de la forma pos(F', C') y pos(F',C') sea una celda contigua a
 %% pos(F,C), donde Pos=pos(F,C). Las celdas contiguas puede ser a lo sumo cuatro
 %% dado que el robot se moverá en forma ortogonal.
-vecino(pos(f1,c1),T,V) :- f1 >= 0,c1 >= 0,length(T,f), f1 =< f, last(T,C),length(C,c),c1 =< c, vecinoAux(pos(f1,c1),T,V).
+vecino(pos(f,c),T,V) :- posValida(pos(f,c),T), vecinoAux(pos(f,c),T,V).
 
-vecinoAux(pos(f1,c1),T,V) :- f1 > 0, F is f1-1,V is pos(F,c).
-vecinoAux(pos(f1,c1),T,V) :- c1 > 0, C is c1-1,V is pos(f1,C).
-vecinoAux(pos(f1,c1),T,V) :- length(T,f), f1 < f, F is f1+1,V is pos(F,c).
-vecinoAux(pos(f1,c1),T,V) :- last(T,L),length(L,c), c1 < c, C is c1+1,V is pos(f1,C).
+
+vecinoAux(pos(f,c),T,V) :- f > 0, F is f-1,V is pos(F,c).
+vecinoAux(pos(f,c),T,V) :- c > 0, C is c-1,V is pos(f,C).
+vecinoAux(pos(f,c),T,V) :- numFilas(T,F), f < F, F1 is f+1,V is pos(F1,c).
+vecinoAux(pos(f,c),T,V) :- numCol(T,C), c < C, C1 is c+1,V is pos(f,C1).
 
 %% Ejercicio 4
 %% vecinoLibre(+Pos, +Tablero, -PosVecino) idem vecino/3 pero además PosVecino
