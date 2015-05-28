@@ -14,6 +14,9 @@ numFilas(T,X) :- length(T,X).
 
 numCol(T,X) :- last(T,L),length(L,X).
 
+%%No chekea si la posicion es valida, se deberia hacer previamente.
+casilleroLibre(pos(f,c),T) :- nth0(f,T,F),nth0(c,F,X),var(X).
+
 %% Ejercicio 1
 %% tablero(+Filas,+Columnas,-Tablero) instancia una estructura de tablero en blanco
 %% de Filas x Columnas, con todas las celdas libres.
@@ -42,7 +45,7 @@ vecinoAux(pos(f,c),T,V) :- numCol(T,C), c < C, C1 is c+1,V is pos(f,C1).
 %% Ejercicio 4
 %% vecinoLibre(+Pos, +Tablero, -PosVecino) idem vecino/3 pero además PosVecino
 %% debe ser una celda transitable (no ocupada) en el Tablero
-vecinoLibre(pos(f1,c1),T,V) :- vecino(pos(f1,c1),T,V),nth0(f,T,F),nth0(c,F,X),var(X).
+vecinoLibre(pos(f,c),T,V) :- vecino(pos(f,c),T,V),casilleroLibre(V,T).
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%
