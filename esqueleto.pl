@@ -54,18 +54,23 @@ vecinoLibre(pos(f,c),T,V) :- vecino(pos(f,c),T,V), casilleroLibre(V,T).
 %% todas las alternativas eventualmente.
 %% Consejo: Utilizar una lista auxiliar con las posiciones visitadas
 
-%%TODO: CHECKEAMOS POSVALIDA?
-camino(S,F,T,C) :- X is [], armarCamino(S,F,T,C,X).
+%%Checkeamos posValida o no vale la pena?
+camino(S,F,T,C) :- posValida(S,T), posValida(F,T), X is [], armarCamino(S,F,T,C,X).
 
 %%ArmarCamino(+Start, +Finish, +Tablero, -CaminoFinal, +CaminoParcial)
-armarCamino(pos(sx,sy),pos(fx,fy),T,C,X) :- sx = fx, sy = fy, C is [pos(fx,fy) | X].
-armarCamino(S,F,T,C,X) :- vecinoLibre(S,T,V), not(member(V,X)), armarCamino(V,F,T,C,[S|X]).
+%% TODO VALE ARMAR LA LISTA DE ESA FORMA?
+armarCamino(pos(sx,sy),pos(fx,fy),T,C,X) :- posValida(pos(sx,sy),T), sx = fx, sy = fy, C is [pos(fx,fy) | X].
+armarCamino(S,F,T,C,X) :- posValida(S,T), vecinoLibre(S,T,V), not(member(V,X)), armarCamino(V,F,T,C,[S|X]).
 
 %% Ejercicio 6
 %% cantidadDeCaminos(+Inicio, +Fin, +Tablero, ?N) que indique la cantidad de caminos
 %% posibles sin ciclos entre Inicio y Fin.
 cantidadDeCaminos(S,F,T,N) :- ground(N), aggregate_all(contador, camino(S,F,T,C), N2), N = N2.
 cantidadDeCaminos(S,F,T,N) :- var(N), aggregate_all(contador, camino(S,F,T,C), N).
+
+%% Creo que se puede unificar en:
+%% cantidadDeCaminos(S,F,T,N) :- aggregate_all(contador, camino(S,F,T,C), N2), N is N2.
+%% pero no estoy seguro
 
 %% Ejercicio 7
 %% camino2(+Inicio, +Fin, +Tablero, -Camino) ídem camino/4 pero se espera una heurística
@@ -74,7 +79,19 @@ cantidadDeCaminos(S,F,T,N) :- var(N), aggregate_all(contador, camino(S,F,T,C), N
 %% Una solución es mejor mientras menos pasos se deba dar para llegar a
 %% destino (distancia Manhattan). Por lo tanto, el predicado deberá devolver de a uno,
 %% todos los caminos pero en orden creciente de longitud.
-camino2(_,_,_,_).
+camino2(S,F,T,C) :- posValida(S,T), posValida(F,T), X is [], armarCamino2(S,F,T,C,X).
+
+%%ArmarCamino2(+Start, +Finish, +Tablero, -CaminoFinal, +CaminoParcial)
+armarCamino2(pos(sx,sy),pos(fx,fy),T,C,X) :- sx = fx, sy = fy, C is [pos(fx,fy) | X].
+armarCamino2(pos(sx,sy),pos(fx,fy),T,C,X) :- sx < fx, V is pos(sx+1,sy), continuar(pos(sx,sy),pos(fx,fy),T,C,X,V).
+armarCamino2(pos(sx,sy),pos(fx,fy),T,C,X) :- sx > fx, V is pos(sx-1,sy), continuar(pos(sx,sy),pos(fx,fy),T,C,X,V).
+armarCamino2(pos(sx,sy),pos(fx,fy),T,C,X) :- sx = fx, sy < fy, V is pos(sx,sy+1), continuar(pos(sx,sy),pos(fx,fy),T,C,X,V).
+armarCamino2(pos(sx,sy),pos(fx,fy),T,C,X) :- sx = fx, sy > fy, V is pos(sx,sy-1), continuar(pos(sx,sy),pos(fx,fy),T,C,X,V).
+%%continua con camino (el original)
+armarCamino2(pos(sx,sy),pos(fx,fy),T,C,X) :- camino(pos(sx,sy),pos(fx,fy),T,C2), append(X,C2,C).
+
+%%continuar(+Start, +Finish, +Tablero, -CaminoFinal, +CaminoParcial, +Vecino)
+continuar(S,F,T,C,X,V) :- casilleroLibre(V,T), not(member(V,X)), armarCamino(V,F,T,C,[S|X]).
 
 %% Ejercicio 8
 %% camino3(+Inicio, +Fin, +Tablero, -Camino) ídem camino2/4 pero se espera que
