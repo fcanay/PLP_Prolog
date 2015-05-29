@@ -55,8 +55,6 @@ vecinoLibre(pos(f,c),T,V) :- vecino(pos(f,c),T,V), casilleroLibre(V,T).
 %% Consejo: Utilizar una lista auxiliar con las posiciones visitadas
 
 %%TODO: CHECKEAMOS POSVALIDA?
-%%Caso borde donde start = finish, pregunte y me dijeron "Devolve la lista unitaria"
-camino(pos(sx,sy),pos(fx,fy),T,C) :- sx = fx, sy = fy, C is [].
 camino(S,F,T,C) :- X is [], armarCamino(S,F,T,C,X).
 
 %%ArmarCamino(+Start, +Finish, +Tablero, -CaminoFinal, +CaminoParcial)
@@ -66,7 +64,8 @@ armarCamino(S,F,T,C,X) :- vecinoLibre(S,T,V), not(member(V,X)), armarCamino(V,F,
 %% Ejercicio 6
 %% cantidadDeCaminos(+Inicio, +Fin, +Tablero, ?N) que indique la cantidad de caminos
 %% posibles sin ciclos entre Inicio y Fin.
-cantidadDeCaminos(_,_,_,_).
+cantidadDeCaminos(S,F,T,N) :- ground(N), aggregate_all(contador, camino(S,F,T,C), N2), N = N2.
+cantidadDeCaminos(S,F,T,N) :- var(N), aggregate_all(contador, camino(S,F,T,C), N).
 
 %% Ejercicio 7
 %% camino2(+Inicio, +Fin, +Tablero, -Camino) ídem camino/4 pero se espera una heurística
