@@ -53,10 +53,15 @@ vecinoLibre(pos(f,c),T,V) :- vecino(pos(f,c),T,V), casilleroLibre(V,T).
 %% Notar que la cantidad de caminos es finita y por ende se tiene que poder recorrer
 %% todas las alternativas eventualmente.
 %% Consejo: Utilizar una lista auxiliar con las posiciones visitadas
+
+%%TODO: CHECKEAMOS POSVALIDA?
 %%Caso borde donde start = finish, pregunte y me dijeron "Devolve la lista unitaria"
 camino(pos(sx,sy),pos(fx,fy),T,C) :- sx = fx, sy = fy, C is [].
-camino(s,f,T,C) :- vecinoLibre(s,T,X), not(member(X,C)), f = X.
-camino(s,f,T,C) :- vecinoLibre(s,T,X), not(member(X,C)), camino(X,f,T,[s|C]).
+camino(S,F,T,C) :- X is [], armarCamino(S,F,T,C,X).
+
+%%ArmarCamino(+Start, +Finish, +Tablero, -CaminoFinal, +CaminoParcial)
+armarCamino(pos(sx,sy),pos(fx,fy),T,C,X) :- sx = fx, sy = fy, C is [pos(fx,fy) | X].
+armarCamino(S,F,T,C,X) :- vecinoLibre(S,T,V), not(member(V,X)), armarCamino(V,F,T,C,[S|X]).
 
 %% Ejercicio 6
 %% cantidadDeCaminos(+Inicio, +Fin, +Tablero, ?N) que indique la cantidad de caminos
