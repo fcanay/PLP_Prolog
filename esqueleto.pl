@@ -12,6 +12,8 @@ numFilas(T,X) :- length(T,X).
 
 numCol(T,X) :- last(T,L), length(L,X).
 
+movValido(P,T,X) :- posValida(P,T),casilleroLibre(P,T),not(member(P,X)).
+
 %%No chekea si la posicion es valida, se deberia hacer previamente.
 casilleroLibre(pos(f,c),T) :- nth0(f,T,F), nth0(c,F,X), var(X).
 
@@ -104,16 +106,16 @@ armarCamino2(pos(sx,sy),pos(fx,fy),T,C,X) :- sx = fx, sy = fy, C is [pos(fx,fy) 
 
 %%Caso inductivo, entro primero hacia la direccion q convenga segun distancia Manhattan.
 %%Si alguna coordenada es igual entre S y F entrare en ambos casos de esa coordenada aqui
-armarCamino2(pos(sx,sy),pos(fx,fy),T,C,X) :- sx =< fx, sy \= fy, V is pos(sx+1,sy), posValida(V,T,C),armarCamino2(V,pos(fx,fy),T,C,[pos(sx,sy)|X]).
-armarCamino2(pos(sx,sy),pos(fx,fy),T,C,X) :- sx >= fx, sy \= fy, V is pos(sx-1,sy), posValida(V,T,C),armarCamino2(V,pos(fx,fy),T,C,[pos(sx,sy)|X]).
-armarCamino2(pos(sx,sy),pos(fx,fy),T,C,X) :- sy =< fy, sx \= fx, V is pos(sx,sy+1), posValida(V,T,C),armarCamino2(V,pos(fx,fy),T,C,[pos(sx,sy)|X]).
-armarCamino2(pos(sx,sy),pos(fx,fy),T,C,X) :- sy >= fy, sx \= fx, V is pos(sx,sy-1), posValida(V,T,C),armarCamino2(V,pos(fx,fy),T,C,[pos(sx,sy)|X]).
+armarCamino2(pos(sx,sy),pos(fx,fy),T,C,X) :- sx =< fx, sy \= fy, V is pos(sx+1,sy), movValido(V,T,X),armarCamino2(V,pos(fx,fy),T,C,[pos(sx,sy)|X]).
+armarCamino2(pos(sx,sy),pos(fx,fy),T,C,X) :- sx >= fx, sy \= fy, V is pos(sx-1,sy), movValido(V,T,X),armarCamino2(V,pos(fx,fy),T,C,[pos(sx,sy)|X]).
+armarCamino2(pos(sx,sy),pos(fx,fy),T,C,X) :- sy =< fy, sx \= fx, V is pos(sx,sy+1), movValido(V,T,X),armarCamino2(V,pos(fx,fy),T,C,[pos(sx,sy)|X]).
+armarCamino2(pos(sx,sy),pos(fx,fy),T,C,X) :- sy >= fy, sx \= fx, V is pos(sx,sy-1), movValido(V,T,X),armarCamino2(V,pos(fx,fy),T,C,[pos(sx,sy)|X]).
 
 %%Por ultima voy hacia el lado apuesto de F, ya que tengo q generar todos los casos igual.
-armarCamino2(pos(sx,sy),pos(fx,fy),T,C,X) :- sx < fx, sy \= fy,V is pos(sx-1,sy), posValida(V,T,C),armarCamino2(V,pos(fx,fy),T,C,[pos(sx,sy)|X]).
-armarCamino2(pos(sx,sy),pos(fx,fy),T,C,X) :- sx > fx, sy \= fy,V is pos(sx+1,sy), posValida(V,T,C),armarCamino2(V,pos(fx,fy),T,C,[pos(sx,sy)|X]).
-armarCamino2(pos(sx,sy),pos(fx,fy),T,C,X) :- sy < fy, sx \= fx,V is pos(sx,sy-1), posValida(V,T,C),armarCamino2(V,pos(fx,fy),T,C,[pos(sx,sy)|X]).
-armarCamino2(pos(sx,sy),pos(fx,fy),T,C,X) :- sy > fy, sx \= fx,V is pos(sx,sy+1), posValida(V,T,C),armarCamino2(V,pos(fx,fy),T,C,[pos(sx,sy)|X]).
+armarCamino2(pos(sx,sy),pos(fx,fy),T,C,X) :- sx < fx, sy \= fy,V is pos(sx-1,sy), movValido(V,T,X),armarCamino2(V,pos(fx,fy),T,C,[pos(sx,sy)|X]).
+armarCamino2(pos(sx,sy),pos(fx,fy),T,C,X) :- sx > fx, sy \= fy,V is pos(sx+1,sy), movValido(V,T,X),armarCamino2(V,pos(fx,fy),T,C,[pos(sx,sy)|X]).
+armarCamino2(pos(sx,sy),pos(fx,fy),T,C,X) :- sy < fy, sx \= fx,V is pos(sx,sy-1), movValido(V,T,X),armarCamino2(V,pos(fx,fy),T,C,[pos(sx,sy)|X]).
+armarCamino2(pos(sx,sy),pos(fx,fy),T,C,X) :- sy > fy, sx \= fx,V is pos(sx,sy+1), movValido(V,T,X),armarCamino2(V,pos(fx,fy),T,C,[pos(sx,sy)|X]).
 
 
 
