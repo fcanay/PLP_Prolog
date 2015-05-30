@@ -90,13 +90,13 @@ armarCamino2(pos(sx,sy),pos(fx,fy),T,C,X) :- sx < fx, V is pos(sx+1,sy), continu
 armarCamino2(pos(sx,sy),pos(fx,fy),T,C,X) :- sx > fx, V is pos(sx-1,sy), continuar(pos(sx,sy),pos(fx,fy),T,C,X,V).
 armarCamino2(pos(sx,sy),pos(fx,fy),T,C,X) :- sx = fx, sy < fy, V is pos(sx,sy+1), continuar(pos(sx,sy),pos(fx,fy),T,C,X,V).
 armarCamino2(pos(sx,sy),pos(fx,fy),T,C,X) :- sx = fx, sy > fy, V is pos(sx,sy-1), continuar(pos(sx,sy),pos(fx,fy),T,C,X,V).
-%%continua con camino (el original)
-armarCamino2(pos(sx,sy),pos(fx,fy),T,C,X) :- camino(pos(sx,sy),pos(fx,fy),T,C2), append(X,C2,C).
+%%continua con algun vecino (como el original)
+armarCamino2(pos(sx,sy),pos(fx,fy),T,C,X) :- vecinoLibre(S,T,V), not(member(V,X)), armarCamino2(V,F,T,C,[S|X]).
 
 %%continuar(+Start, +Finish, +Tablero, -CaminoFinal, +CaminoParcial, +Vecino)
-continuar(S,F,T,C,X,V) :- casilleroLibre(V,T), not(member(V,X)), armarCamino(V,F,T,C,[S|X]).
+continuar(S,F,T,C,X,V) :- casilleroLibre(V,T), not(member(V,X)), armarCamino2(V,F,T,C,[S|X]).
 
-
+%%No se si se puede hacer asi, o hay que hacer "X is [], armarCamino2(S,F,T,C,X)."
 camino2(S,F,T,C) :- posValida(S,T), posValida(F,T), armarCamino2(S,F,T,C,[]).
 
 %%ArmarCamino2(+Start, +Finish, +Tablero, -CaminoFinal, +CaminoParcial)
