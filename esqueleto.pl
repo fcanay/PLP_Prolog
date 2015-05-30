@@ -54,13 +54,13 @@ vecinoLibre(pos(f,c),T,V) :- vecino(pos(f,c),T,V), casilleroLibre(V,T).
 %% todas las alternativas eventualmente.
 %% Consejo: Utilizar una lista auxiliar con las posiciones visitadas
 
-%%Checkeamos posValida o no vale la pena?
-camino(S,F,T,C) :- posValida(S,T), posValida(F,T), X is [], armarCamino(S,F,T,C,X).
+%%Checkeamos posValida o no vale la pena? No vale la pena, se chekea en vecinosLibres
+camino(S,F,T,C) :- armarCamino(S,F,T,[]), C is [F | X].
 
 %%ArmarCamino(+Start, +Finish, +Tablero, -CaminoFinal, +CaminoParcial)
 %% TODO VALE ARMAR LA LISTA DE ESA FORMA?
-armarCamino(pos(sx,sy),pos(fx,fy),T,C,X) :- posValida(pos(sx,sy),T), sx = fx, sy = fy, C is [pos(fx,fy) | X].
-armarCamino(S,F,T,C,X) :- posValida(S,T), vecinoLibre(S,T,V), not(member(V,X)), armarCamino(V,F,T,C,[S|X]).
+armarCamino(pos(sx,sy),pos(sx,sy),T,X).
+armarCamino(S,F,T,X) :- vecinoLibre(S,T,V), not(member(V,X)), armarCamino(V,F,T,[S|X]).
 
 %% Ejercicio 6
 %% cantidadDeCaminos(+Inicio, +Fin, +Tablero, ?N) que indique la cantidad de caminos
@@ -78,15 +78,16 @@ cantidadDeCaminos(S,F,T,N) :- var(N), aggregate_all(contador, camino(S,F,T,C), N
 %% No se espera que la primera solución sea necesariamente la mejor.
 %% Una solución es mejor mientras menos pasos se deba dar para llegar a
 %% destino (distancia Manhattan). Por lo tanto, el predicado deberá devolver de a uno,
-%% todos los caminos pero en orden creciente de longitud.
-camino2(S,F,T,C) :- posValida(S,T), posValida(F,T), X is [], armarCamino2(S,F,T,C,X).
+%% todos los caminos pero en orden creciente de longitud. NO HACE ESTO!!! es una heuristica
+%% que trata pero no es perfecta
+camino2(S,F,T,C) :- posValida(S,T), posValida(F,T), armarCamino2(S,F,T,[]),C is [F | X].
 
 %%ArmarCamino2(+Start, +Finish, +Tablero, -CaminoFinal, +CaminoParcial)
-armarCamino2(pos(sx,sy),pos(fx,fy),T,C,X) :- sx = fx, sy = fy, C is [pos(fx,fy) | X].
+armarCamino2(pos(sx,sy),pos(sx,sy),T,C,X).
 armarCamino2(pos(sx,sy),pos(fx,fy),T,C,X) :- sx < fx, V is pos(sx+1,sy), continuar(pos(sx,sy),pos(fx,fy),T,C,X,V).
 armarCamino2(pos(sx,sy),pos(fx,fy),T,C,X) :- sx > fx, V is pos(sx-1,sy), continuar(pos(sx,sy),pos(fx,fy),T,C,X,V).
-armarCamino2(pos(sx,sy),pos(fx,fy),T,C,X) :- sx = fx, sy < fy, V is pos(sx,sy+1), continuar(pos(sx,sy),pos(fx,fy),T,C,X,V).
-armarCamino2(pos(sx,sy),pos(fx,fy),T,C,X) :- sx = fx, sy > fy, V is pos(sx,sy-1), continuar(pos(sx,sy),pos(fx,fy),T,C,X,V).
+armarCamino2(pos(sx,sy),pos(sx,fy),T,C,X) :- sy < fy, V is pos(sx,sy+1), continuar(pos(sx,sy),pos(fx,fy),T,C,X,V).
+armarCamino2(pos(sx,sy),pos(sx,fy),T,C,X) :- sy > fy, V is pos(sx,sy-1), continuar(pos(sx,sy),pos(fx,fy),T,C,X,V).
 %%continua con camino (el original)
 armarCamino2(pos(sx,sy),pos(fx,fy),T,C,X) :- camino(pos(sx,sy),pos(fx,fy),T,C2), append(X,C2,C).
 
