@@ -5,8 +5,8 @@
 %%AUX
 posValida(pos(f,c),T) :- f >= 0, c >= 0, numFilas(T,F), f =< F, numCol(T,C), c =< C.
 
-allOflenghth([],c).
-allOflenghth([x|L],c) :- length(x,c), allOflenghth(L,c).
+allOflenghth([],_).
+allOflenghth([X|L],C) :- length(X,C), allOflenghth(L,C).
 
 numFilas(T,X) :- length(T,X).
 
@@ -14,17 +14,21 @@ numCol(T,X) :- last(T,L), length(L,X).
 
 movValido(P,T,X) :- posValida(P,T),casilleroLibre(P,T),not(member(P,X)).
 
+%%Ejemplos
+tablero(ej5x5, T) :-tablero(5, 5, T),ocupar(pos(1, 1), T),ocupar(pos(1, 2), T).
+
+
 %%No chekea si la posicion es valida, se deberia hacer previamente.
 casilleroLibre(pos(f,c),T) :- nth0(f,T,F), nth0(c,F,X), var(X).
 
 %% Ejercicio 1
 %% tablero(+Filas,+Columnas,-Tablero) instancia una estructura de tablero en blanco
 %% de Filas x Columnas, con todas las celdas libres.
-tablero(f,c,L) :- length(L,f), allOflenghth(L,c).
+tablero(F,C,T) :- length(T,F), allOflenghth(T,C).
 
 %% Ejercicio 2
 %% ocupar(+Pos,?Tablero) será verdadero cuando la posición indicada esté ocupada.
-ocupar(pos(f,c),T) :- nth0(f,T,F), nth0(c,F,X), X is ocupada.
+ocupar(pos(F,C),T) :- nth0(C,T,F1), nth0(C,F1,ocupada).
 
 %% Ejercicio 3
 %% vecino(+Pos, +Tablero, -PosVecino) será verdadero cuando PosVecino sea
@@ -33,8 +37,8 @@ ocupar(pos(f,c),T) :- nth0(f,T,F), nth0(c,F,X), X is ocupada.
 %% dado que el robot se moverá en forma ortogonal.
 vecino(pos(f,c),T,V) :- posValida(pos(f,c),T), vecinoAux(pos(f,c),T,V).
 
-vecinoAux(pos(f,c),T,V) :- f > 0, F is f-1,V is pos(F,c).
-vecinoAux(pos(f,c),T,V) :- c > 0, C is c-1,V is pos(f,C).
+vecinoAux(pos(f,c),_,V) :- f > 0, F is f-1,V is pos(F,c).
+vecinoAux(pos(f,c),_,V) :- c > 0, C is c-1,V is pos(f,C).
 vecinoAux(pos(f,c),T,V) :- numFilas(T,F), f < F, F1 is f+1,V is pos(F1,c).
 vecinoAux(pos(f,c),T,V) :- numCol(T,C), c < C, C1 is c+1,V is pos(f,C1).
 
@@ -67,8 +71,8 @@ armarCamino(S,F,T,C,X) :- vecinoLibre(S,T,V), not(member(V,X)), armarCamino(V,F,
 %% Ejercicio 6
 %% cantidadDeCaminos(+Inicio, +Fin, +Tablero, ?N) que indique la cantidad de caminos
 %% posibles sin ciclos entre Inicio y Fin.
-cantidadDeCaminos(S,F,T,N) :- ground(N), aggregate_all(contador, camino(S,F,T,C), N2), N = N2.
-cantidadDeCaminos(S,F,T,N) :- var(N), aggregate_all(contador, camino(S,F,T,C), N).
+cantidadDeCaminos(S,F,T,N) :- ground(N), aggregate_all(contador, camino(S,F,T,_), N2), N = N2.
+cantidadDeCaminos(S,F,T,N) :- var(N), aggregate_all(contador, camino(S,F,T,_), N).
 
 %% Creo que se puede unificar en:
 %% cantidadDeCaminos(S,F,T,N) :- aggregate_all(contador, camino(S,F,T,C), N2), N is N2.
@@ -85,7 +89,7 @@ cantidadDeCaminos(S,F,T,N) :- var(N), aggregate_all(contador, camino(S,F,T,C), N
 camino2(S,F,T,C) :- posValida(S,T), posValida(F,T), X is [], armarCamino2(S,F,T,C,X).
 
 %%ArmarCamino2(+Start, +Finish, +Tablero, -CaminoFinal, +CaminoParcial)
-armarCamino2(pos(sx,sy),pos(fx,fy),T,C,X) :- sx = fx, sy = fy, C is [pos(fx,fy) | X].
+armarCamino2(pos(sx,sy),pos(fx,fy),_,C,X) :- sx = fx, sy = fy, C is [pos(fx,fy) | X].
 armarCamino2(pos(sx,sy),pos(fx,fy),T,C,X) :- sx < fx, V is pos(sx+1,sy), continuar(pos(sx,sy),pos(fx,fy),T,C,X,V).
 armarCamino2(pos(sx,sy),pos(fx,fy),T,C,X) :- sx > fx, V is pos(sx-1,sy), continuar(pos(sx,sy),pos(fx,fy),T,C,X,V).
 armarCamino2(pos(sx,sy),pos(fx,fy),T,C,X) :- sx = fx, sy < fy, V is pos(sx,sy+1), continuar(pos(sx,sy),pos(fx,fy),T,C,X,V).
@@ -102,7 +106,7 @@ camino2(S,F,T,C) :- posValida(S,T), posValida(F,T), armarCamino2(S,F,T,C,[]).
 %%ArmarCamino2(+Start, +Finish, +Tablero, -CaminoFinal, +CaminoParcial)
 
 %%Caso base, llegue al nodo final
-armarCamino2(pos(sx,sy),pos(fx,fy),T,C,X) :- sx = fx, sy = fy, C is [pos(fx,fy) | X].
+armarCamino2(pos(sx,sy),pos(fx,fy),_,C,X) :- sx = fx, sy = fy, C is [pos(fx,fy) | X].
 
 %%Caso inductivo, entro primero hacia la direccion q convenga segun distancia Manhattan.
 %%Si alguna coordenada es igual entre S y F entrare en ambos casos de esa coordenada aqui
