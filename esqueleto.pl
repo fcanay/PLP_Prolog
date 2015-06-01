@@ -82,7 +82,7 @@ vecinoEnOrdenAux(pos(FS,CS),_,Y,pos(FS,NS)) :- Y >= 0, NS is CS +1.
 %% todas las alternativas eventualmente.
 %% Consejo: Utilizar una lista auxiliar con las posiciones visitadas
 
-%%Checkeamos posValida o no vale la pena? No vale la pena, se chekea en vecinosLibres. Santi: Estas seguro? Me parece que va este eh
+%%Checkeamos posValida o no vale la pena? No vale la pena, se chekea en vecinosLibres. Santi: Estas seguro? Me parece que va este:
 %%camino(pos(FS,CS),pos(FF,CF),T,C) :- posValida(pos(FS,CS),T), posValida(pos(FF,CF),T), armarCamino(pos(FS,CS),pos(FF,CF),T,C,[]).
 %%Sino camino(pos(100,100), pos(100,100), [], C) da [pos(100,100)]
 camino(S,F,T,C) :- armarCamino(F,S,T,C,[]).
@@ -94,12 +94,11 @@ armarCamino(S,F,T,C,X) :- vecinoLibre(S,T,V), not(member(V,X)), armarCamino(V,F,
 %% Ejercicio 6
 %% cantidadDeCaminos(+Inicio, +Fin, +Tablero, ?N) que indique la cantidad de caminos
 %% posibles sin ciclos entre Inicio y Fin.
-cantidadDeCaminos(S,F,T,N) :- ground(N), aggregate_all(count, camino(S,F,T,_), N2), N = N2.
-cantidadDeCaminos(S,F,T,N) :- var(N), aggregate_all(count, camino(S,F,T,_), N).
+%%cantidadDeCaminos(S,F,T,N) :- ground(N), aggregate_all(count, camino(S,F,T,_), N2), N = N2.
+%%cantidadDeCaminos(S,F,T,N) :- var(N), aggregate_all(count, camino(S,F,T,_), N).
 
 %% Creo que se puede unificar en:
-%% cantidadDeCaminos(S,F,T,N) :- aggregate_all(contador, camino(S,F,T,C), N2), N is N2.
-%% pero no estoy seguro
+cantidadDeCaminos(S,F,T,N) :- aggregate_all(count, camino(S,F,T,_), N2), N is N2.
 
 %% Ejercicio 7
 %% camino2(+Inicio, +Fin, +Tablero, -Camino) ídem camino/4 pero se espera una heurística
@@ -114,10 +113,6 @@ camino2(S,F,T,C) :- posValida(S,T), posValida(F,T), armarCamino2(F,S,T,C,[]).
 %%armarCamino2(+Start, +Finish, +Tablero, -CaminoFinal, +CaminoParcial)
 armarCamino2(pos(SX,SY),pos(SX,SY),_,[pos(SX,SY) | X],X).
 armarCamino2(S,F,T,C,X) :- vecinoEnOrden(S,F,V), movValido(V,T,X),armarCamino2(V,F,T,C,[S|X]).
-
-
-
-
 
 %% Ejercicio 8
 %% camino3(+Inicio, +Fin, +Tablero, -Camino) ídem camino2/4 pero se espera que
