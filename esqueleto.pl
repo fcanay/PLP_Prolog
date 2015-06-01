@@ -38,7 +38,7 @@ tablero(F,C,T) :- length(T,F), allOflenghth(T,C).
 
 %% Ejercicio 2
 %% ocupar(+Pos,?Tablero) será verdadero cuando la posición indicada esté ocupada.
-ocupar(pos(F,C),T) :- nth0(C,T,F1), nth0(C,F1,ocupada).
+ocupar(pos(F,C),T) :- nth0(F,T,F1), nth0(C,F1,ocupada).
 
 %% Ejercicio 3
 %% vecino(+Pos, +Tablero, -PosVecino) será verdadero cuando PosVecino sea
