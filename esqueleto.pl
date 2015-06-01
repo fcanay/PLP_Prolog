@@ -57,6 +57,18 @@ vecinoAux(pos(F,C),T,pos(F,C1)) :- numCol(T,NC), C < NC, C1 is C+1.
 %% debe ser una celda transitable (no ocupada) en el Tablero
 vecinoLibre(pos(F,C),T,V) :- vecino(pos(F,C),T,V), casilleroLibre(V,T).
 
+vecinoEnOrden(pos(FS,CS),pos(FE,CE),T,V) :- X is FS - FE, Y is CS - CE,vecinoEnOrdenAux(pos(FS,CS),X,Y,T,V).
+vecinoEnOrdenAux(pos(FS,CS),X,Y,T,pos(NS,CS)) :- X < 0, NS is FS +1.
+vecinoEnOrdenAux(pos(FS,CS),X,Y,T,pos(NS,CS)) :- X > 0, NS is FS -1.
+vecinoEnOrdenAux(pos(FS,CS),X,Y,T,pos(FS,NS)) :- Y < 0, NS is CS +1.
+vecinoEnOrdenAux(pos(FS,CS),X,Y,T,pos(FS,NS)) :- Y > 0, NS is CS -1.
+
+vecinoEnOrdenAux(pos(FS,CS),X,Y,T,pos(NS,CS)) :- X =< 0, NS is FS -1.
+vecinoEnOrdenAux(pos(FS,CS),X,Y,T,pos(NS,CS)) :- X >= 0, NS is FS +1.
+vecinoEnOrdenAux(pos(FS,CS),X,Y,T,pos(FS,NS)) :- Y =< 0, NS is CS -1.
+vecinoEnOrdenAux(pos(FS,CS),X,Y,T,pos(FS,NS)) :- Y >= 0, NS is CS +1.
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%
 %% Definicion de caminos
 %%%%%%%%%%%%%%%%%%%%%%%%
@@ -97,7 +109,7 @@ cantidadDeCaminos(S,F,T,N) :- var(N), aggregate_all(contador, camino(S,F,T,_), N
 %% destino (distancia Manhattan). Por lo tanto, el predicado deberá devolver de a uno,
 %% todos los caminos pero en orden creciente de longitud. NO HACE ESTO!!! es una heuristica
 %% que trata pero no es perfecta
-camino2(S,F,T,C) :- posValida(S,T), posValida(F,T),armarCamino2F(S,F,T,C,[]).
+camino2(S,F,T,C) :- posValida(S,T), posValida(F,T),armarCamino2F2(S,F,T,C,[]).
 
 %%VERSION SANTI
 %%armarCamino2S(+Start, +Finish, +Tablero, -CaminoFinal, +CaminoParcial)
@@ -135,6 +147,8 @@ armarCamino2F(pos(SX,SY),pos(FX,FY),T,C,X) :- SY > FY, SX \= FX,NY is SY+1,movVa
 armarCamino2F(pos(SX,SY),pos(FX,FY),T,C,X) :- SY < FY, SX \= FX,NY is SY-1,movValido(pos(SX,NY),T,X), armarCamino2F(pos(SX,NY),pos(FX,FY),T,C,[pos(SX,SY)|X]).
 
 
+armarCamino2F2(pos(SX,SY),pos(SX,SY),T,[pos(SX,SY) | X],X).
+armarCamino2F2(S,F,T,C,X) :- vecinoEnOrden(S,F,T,V), movValido(V,T,X) armarCamino2F2(V,F,T,C,[S|X]).
 
 
 
