@@ -16,6 +16,16 @@ movValido(P,T,X) :- posValida(P,T),casilleroLibre(P,T),not(member(P,X)).
 
 %%Ejemplos
 tablero(ej5x5, T) :-tablero(5, 5, T),ocupar(pos(1, 1), T),ocupar(pos(1, 2), T).
+tablero(chorizo2x4, T) :- tablero(2, 4, T).
+tablero(chorizo4x2, T) :- tablero(4, 2, T).
+tablero(chorizo2x5obstaculo, T) :- tablero(2, 4, T), ocupar(pos(1, 3), T).
+tablero(chorizo5x2obstaculo, T) :- tablero(5, 2, T), ocupar(pos(3, 0), T).
+tablero(libre2x2, T) :- tablero(2, 2, T).
+tablero(libre3x3, T) :- tablero(3, 3, T).
+tablero(dona3x3, T) :- tablero(3, 3, T), ocupar(pos(1, 1), T).
+tablero(cueva5x5, T) :- tablero(5, 5, T), ocupar(pos(1, 1), T), ocupar(pos(1, 2), T), ocupar(pos(1, 3), T), ocupar(pos(2, 3), T) ocupar(pos(3, 1), T), ocupar(pos(3, 2), T), ocupar(pos(3, 3), T).
+tablero(zigzag5x5restringido, T) :- tablero(5, 6, T), ocupar(pos(1, 1), T), ocupar(pos(0, 2), T), ocupar(pos(3, 1), T), ocupar(pos(3, 2), T), ocupar(pos(2, 3), T), ocupar(pos(1, 4), T), ocupar(pos(3, 5), T), ocupar(pos(4, 5), T), ocupar(pos(3, 4), T).
+tablero(zigzag5x5, T) :- tablero(5, 6, T), ocupar(pos(1, 1), T), ocupar(pos(0, 2), T), ocupar(pos(3, 1), T), ocupar(pos(3, 2), T), ocupar(pos(2, 3), T), ocupar(pos(1, 4), T).
 
 
 %%No chekea si la posicion es valida, se deberia hacer previamente.
