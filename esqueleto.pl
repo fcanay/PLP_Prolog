@@ -109,7 +109,7 @@ cantidadDeCaminos(S,F,T,N) :- var(N), aggregate_all(contador, camino(S,F,T,_), N
 %% destino (distancia Manhattan). Por lo tanto, el predicado deberá devolver de a uno,
 %% todos los caminos pero en orden creciente de longitud. NO HACE ESTO!!! es una heuristica
 %% que trata pero no es perfecta
-camino2(S,F,T,C) :- posValida(S,T), posValida(F,T),armarCamino2F2(S,F,T,C,[]).
+camino2(S,F,T,C) :- posValida(S,T), posValida(F,T),armarCamino2F2(F,S,T,C,[]).
 
 %%VERSION SANTI
 %%armarCamino2S(+Start, +Finish, +Tablero, -CaminoFinal, +CaminoParcial)
@@ -148,7 +148,7 @@ armarCamino2F(pos(SX,SY),pos(FX,FY),T,C,X) :- SY < FY, SX \= FX,NY is SY-1,movVa
 
 
 armarCamino2F2(pos(SX,SY),pos(SX,SY),T,[pos(SX,SY) | X],X).
-armarCamino2F2(S,F,T,C,X) :- vecinoEnOrden(S,F,T,V), movValido(V,T,X) armarCamino2F2(V,F,T,C,[S|X]).
+armarCamino2F2(S,F,T,C,X) :- vecinoEnOrden(S,F,T,V), movValido(V,T,X),armarCamino2F2(V,F,T,C,[S|X]).
 
 
 
