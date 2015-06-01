@@ -37,8 +37,8 @@ ocupar(pos(F,C),T) :- nth0(C,T,F1), nth0(C,F1,ocupada).
 %% dado que el robot se moverá en forma ortogonal.
 vecino(pos(F,C),T,V) :- posValida(pos(F,C),T), vecinoAux(pos(F,C),T,V).
 
-vecinoAux(pos(f,c),_,V) :- f > 0, F1 is f-1,V is pos(F1,c).
-vecinoAux(pos(f,c),_,V) :- c > 0, C1 is c-1,V is pos(f,C1).
+vecinoAux(pos(F,C),_,V) :- F > 0, F1 is F-1,V is pos(F1,C).
+vecinoAux(pos(F,C),_,V) :- C > 0, C1 is C-1,V is pos(F,C1).
 vecinoAux(pos(F,C),T,V) :- numFilas(T,NF), F < NF, F1 is F+1,V is pos(F1,C).
 vecinoAux(pos(F,C),T,V) :- numCol(T,NC), C < NC, C1 is C+1,V is pos(F,C1).
 
@@ -61,7 +61,7 @@ vecinoLibre(pos(F,C),T,V) :- vecino(pos(F,C),T,V), casilleroLibre(V,T).
 %% Consejo: Utilizar una lista auxiliar con las posiciones visitadas
 
 %%Checkeamos posValida o no vale la pena? No vale la pena, se chekea en vecinosLibres
-camino(S,F,T,C) :- armarCamino(S,F,T,[]).
+camino(S,F,T,C) :- armarCamino(S,F,T,C,[]).
 
 %%ArmarCamino(+Start, +Finish, +Tablero, -CaminoFinal, +CaminoParcial)
 %% TODO VALE ARMAR LA LISTA DE ESA FORMA?
