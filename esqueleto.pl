@@ -3,7 +3,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%
 
 %%AUX
-posValida(pos(f,c),T) :- f >= 0, c >= 0, numFilas(T,F), f =< F, numCol(T,C), c =< C.
+posValida(pos(F,C),T) :- F >= 0, C >= 0, numFilas(T,F1), F =< F1, numCol(T,C1), C =< C1.
 
 allOflenghth([],_).
 allOflenghth([X|L],C) :- length(X,C), allOflenghth(L,C).
@@ -19,7 +19,7 @@ tablero(ej5x5, T) :-tablero(5, 5, T),ocupar(pos(1, 1), T),ocupar(pos(1, 2), T).
 
 
 %%No chekea si la posicion es valida, se deberia hacer previamente.
-casilleroLibre(pos(f,c),T) :- nth0(f,T,F), nth0(c,F,X), var(X).
+casilleroLibre(pos(F,C),T) :- nth0(F,T,F1), nth0(C,F1,X), var(X).
 
 %% Ejercicio 1
 %% tablero(+Filas,+Columnas,-Tablero) instancia una estructura de tablero en blanco
@@ -35,17 +35,17 @@ ocupar(pos(F,C),T) :- nth0(C,T,F1), nth0(C,F1,ocupada).
 %% un átomo de la forma pos(F', C') y pos(F',C') sea una celda contigua a
 %% pos(F,C), donde Pos=pos(F,C). Las celdas contiguas puede ser a lo sumo cuatro
 %% dado que el robot se moverá en forma ortogonal.
-vecino(pos(f,c),T,V) :- posValida(pos(f,c),T), vecinoAux(pos(f,c),T,V).
+vecino(pos(F,C),T,V) :- posValida(pos(F,C),T), vecinoAux(pos(F,C),T,V).
 
-vecinoAux(pos(f,c),_,V) :- f > 0, F is f-1,V is pos(F,c).
-vecinoAux(pos(f,c),_,V) :- c > 0, C is c-1,V is pos(f,C).
-vecinoAux(pos(f,c),T,V) :- numFilas(T,F), f < F, F1 is f+1,V is pos(F1,c).
-vecinoAux(pos(f,c),T,V) :- numCol(T,C), c < C, C1 is c+1,V is pos(f,C1).
+vecinoAux(pos(f,c),_,V) :- f > 0, F1 is f-1,V is pos(F1,c).
+vecinoAux(pos(f,c),_,V) :- c > 0, C1 is c-1,V is pos(f,C1).
+vecinoAux(pos(F,C),T,V) :- numFilas(T,NF), F < NF, F1 is F+1,V is pos(F1,C).
+vecinoAux(pos(F,C),T,V) :- numCol(T,NC), C < NC, C1 is C+1,V is pos(F,C1).
 
 %% Ejercicio 4
 %% vecinoLibre(+Pos, +Tablero, -PosVecino) idem vecino/3 pero además PosVecino
 %% debe ser una celda transitable (no ocupada) en el Tablero
-vecinoLibre(pos(f,c),T,V) :- vecino(pos(f,c),T,V), casilleroLibre(V,T).
+vecinoLibre(pos(F,C),T,V) :- vecino(pos(F,C),T,V), casilleroLibre(V,T).
 
 %%%%%%%%%%%%%%%%%%%%%%%%
 %% Definicion de caminos
@@ -65,7 +65,7 @@ camino(S,F,T,C) :- armarCamino(S,F,T,[]).
 
 %%ArmarCamino(+Start, +Finish, +Tablero, -CaminoFinal, +CaminoParcial)
 %% TODO VALE ARMAR LA LISTA DE ESA FORMA?
-armarCamino(pos(sx,sy),pos(sx,sy),T,C,X) :- C is [pos(sx,sy) | X].
+armarCamino(pos(SX,SY),pos(SX,SY),T,C,X) :- C is [pos(SX,SY) | X].
 armarCamino(S,F,T,C,X) :- vecinoLibre(S,T,V), not(member(V,X)), armarCamino(V,F,T,C,[S|X]).
 
 %% Ejercicio 6
@@ -89,13 +89,13 @@ cantidadDeCaminos(S,F,T,N) :- var(N), aggregate_all(contador, camino(S,F,T,_), N
 camino2(S,F,T,C) :- posValida(S,T), posValida(F,T), X is [], armarCamino2(S,F,T,C,X).
 
 %%ArmarCamino2(+Start, +Finish, +Tablero, -CaminoFinal, +CaminoParcial)
-armarCamino2(pos(sx,sy),pos(fx,fy),_,C,X) :- sx = fx, sy = fy, C is [pos(fx,fy) | X].
-armarCamino2(pos(sx,sy),pos(fx,fy),T,C,X) :- sx < fx, V is pos(sx+1,sy), continuar(pos(sx,sy),pos(fx,fy),T,C,X,V).
-armarCamino2(pos(sx,sy),pos(fx,fy),T,C,X) :- sx > fx, V is pos(sx-1,sy), continuar(pos(sx,sy),pos(fx,fy),T,C,X,V).
-armarCamino2(pos(sx,sy),pos(fx,fy),T,C,X) :- sx = fx, sy < fy, V is pos(sx,sy+1), continuar(pos(sx,sy),pos(fx,fy),T,C,X,V).
-armarCamino2(pos(sx,sy),pos(fx,fy),T,C,X) :- sx = fx, sy > fy, V is pos(sx,sy-1), continuar(pos(sx,sy),pos(fx,fy),T,C,X,V).
+armarCamino2(pos(SX,SY),pos(FX,FY),_,C,X) :- SX = FX, SY = FY, C is [pos(FX,FY) | X].
+armarCamino2(pos(SX,SY),pos(FX,FY),T,C,X) :- SX < FX, V is pos(SX+1,SY), continuar(pos(SX,SY),pos(FX,FY),T,C,X,V).
+armarCamino2(pos(SX,SY),pos(FX,FY),T,C,X) :- SX > FX, V is pos(SX-1,SY), continuar(pos(SX,SY),pos(FX,FY),T,C,X,V).
+armarCamino2(pos(SX,SY),pos(FX,FY),T,C,X) :- SX = FX, SY < FY, V is pos(SX,SY+1), continuar(pos(SX,SY),pos(FX,FY),T,C,X,V).
+armarCamino2(pos(SX,SY),pos(FX,FY),T,C,X) :- SX = FX, SY > FY, V is pos(SX,SY-1), continuar(pos(SX,SY),pos(FX,FY),T,C,X,V).
 %%continua con algun vecino (como el original)
-armarCamino2(pos(sx,sy),pos(fx,fy),T,C,X) :- vecinoLibre(S,T,V), not(member(V,X)), armarCamino2(V,F,T,C,[S|X]).
+armarCamino2(pos(SX,SY),pos(FX,FY),T,C,X) :- vecinoLibre(S,T,V), not(member(V,X)), armarCamino2(V,F,T,C,[S|X]).
 
 %%continuar(+Start, +Finish, +Tablero, -CaminoFinal, +CaminoParcial, +Vecino)
 continuar(S,F,T,C,X,V) :- casilleroLibre(V,T), not(member(V,X)), armarCamino2(V,F,T,C,[S|X]).
@@ -106,20 +106,20 @@ camino2(S,F,T,C) :- posValida(S,T), posValida(F,T), armarCamino2(S,F,T,C,[]).
 %%ArmarCamino2(+Start, +Finish, +Tablero, -CaminoFinal, +CaminoParcial)
 
 %%Caso base, llegue al nodo final
-armarCamino2(pos(sx,sy),pos(fx,fy),_,C,X) :- sx = fx, sy = fy, C is [pos(fx,fy) | X].
+armarCamino2(pos(SX,SY),pos(FX,FY),_,C,X) :- SX = FX, SY = FY, C is [pos(FX,FY) | X].
 
 %%Caso inductivo, entro primero hacia la direccion q convenga segun distancia Manhattan.
 %%Si alguna coordenada es igual entre S y F entrare en ambos casos de esa coordenada aqui
-armarCamino2(pos(sx,sy),pos(fx,fy),T,C,X) :- sx =< fx, sy \= fy, V is pos(sx+1,sy), movValido(V,T,X),armarCamino2(V,pos(fx,fy),T,C,[pos(sx,sy)|X]).
-armarCamino2(pos(sx,sy),pos(fx,fy),T,C,X) :- sx >= fx, sy \= fy, V is pos(sx-1,sy), movValido(V,T,X),armarCamino2(V,pos(fx,fy),T,C,[pos(sx,sy)|X]).
-armarCamino2(pos(sx,sy),pos(fx,fy),T,C,X) :- sy =< fy, sx \= fx, V is pos(sx,sy+1), movValido(V,T,X),armarCamino2(V,pos(fx,fy),T,C,[pos(sx,sy)|X]).
-armarCamino2(pos(sx,sy),pos(fx,fy),T,C,X) :- sy >= fy, sx \= fx, V is pos(sx,sy-1), movValido(V,T,X),armarCamino2(V,pos(fx,fy),T,C,[pos(sx,sy)|X]).
+armarCamino2(pos(SX,SY),pos(FX,FY),T,C,X) :- SX =< FX, SY \= FY, V is pos(SX+1,SY), movValido(V,T,X),armarCamino2(V,pos(FX,FY),T,C,[pos(SX,SY)|X]).
+armarCamino2(pos(SX,SY),pos(FX,FY),T,C,X) :- SX >= FX, SY \= FY, V is pos(SX-1,SY), movValido(V,T,X),armarCamino2(V,pos(FX,FY),T,C,[pos(SX,SY)|X]).
+armarCamino2(pos(SX,SY),pos(FX,FY),T,C,X) :- SY =< FY, SX \= FX, V is pos(SX,SY+1), movValido(V,T,X),armarCamino2(V,pos(FX,FY),T,C,[pos(SX,SY)|X]).
+armarCamino2(pos(SX,SY),pos(FX,FY),T,C,X) :- SY >= FY, SX \= FX, V is pos(SX,SY-1), movValido(V,T,X),armarCamino2(V,pos(FX,FY),T,C,[pos(SX,SY)|X]).
 
 %%Por ultima voy hacia el lado apuesto de F, ya que tengo q generar todos los casos igual.
-armarCamino2(pos(sx,sy),pos(fx,fy),T,C,X) :- sx < fx, sy \= fy,V is pos(sx-1,sy), movValido(V,T,X),armarCamino2(V,pos(fx,fy),T,C,[pos(sx,sy)|X]).
-armarCamino2(pos(sx,sy),pos(fx,fy),T,C,X) :- sx > fx, sy \= fy,V is pos(sx+1,sy), movValido(V,T,X),armarCamino2(V,pos(fx,fy),T,C,[pos(sx,sy)|X]).
-armarCamino2(pos(sx,sy),pos(fx,fy),T,C,X) :- sy < fy, sx \= fx,V is pos(sx,sy-1), movValido(V,T,X),armarCamino2(V,pos(fx,fy),T,C,[pos(sx,sy)|X]).
-armarCamino2(pos(sx,sy),pos(fx,fy),T,C,X) :- sy > fy, sx \= fx,V is pos(sx,sy+1), movValido(V,T,X),armarCamino2(V,pos(fx,fy),T,C,[pos(sx,sy)|X]).
+armarCamino2(pos(SX,SY),pos(FX,FY),T,C,X) :- SX < FX, SY \= FY,V is pos(SX-1,SY), movValido(V,T,X),armarCamino2(V,pos(FX,FY),T,C,[pos(SX,SY)|X]).
+armarCamino2(pos(SX,SY),pos(FX,FY),T,C,X) :- SX > FX, SY \= FY,V is pos(SX+1,SY), movValido(V,T,X),armarCamino2(V,pos(FX,FY),T,C,[pos(SX,SY)|X]).
+armarCamino2(pos(SX,SY),pos(FX,FY),T,C,X) :- SY < FY, SX \= FX,V is pos(SX,SY-1), movValido(V,T,X),armarCamino2(V,pos(FX,FY),T,C,[pos(SX,SY)|X]).
+armarCamino2(pos(SX,SY),pos(FX,FY),T,C,X) :- SY > FY, SX \= FX,V is pos(SX,SY+1), movValido(V,T,X),armarCamino2(V,pos(FX,FY),T,C,[pos(SX,SY)|X]).
 
 
 
