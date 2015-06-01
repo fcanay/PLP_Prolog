@@ -57,16 +57,16 @@ vecinoAux(pos(F,C),T,pos(F,C1)) :- numCol(T,NC), C < NC, C1 is C+1.
 %% debe ser una celda transitable (no ocupada) en el Tablero
 vecinoLibre(pos(F,C),T,V) :- vecino(pos(F,C),T,V), casilleroLibre(V,T).
 
-vecinoEnOrden(pos(FS,CS),pos(FE,CE),T,V) :- X is FS - FE, Y is CS - CE,vecinoEnOrdenAux(pos(FS,CS),X,Y,T,V).
-vecinoEnOrdenAux(pos(FS,CS),X,Y,T,pos(NS,CS)) :- X < 0, NS is FS +1.
-vecinoEnOrdenAux(pos(FS,CS),X,Y,T,pos(NS,CS)) :- X > 0, NS is FS -1.
-vecinoEnOrdenAux(pos(FS,CS),X,Y,T,pos(FS,NS)) :- Y < 0, NS is CS +1.
-vecinoEnOrdenAux(pos(FS,CS),X,Y,T,pos(FS,NS)) :- Y > 0, NS is CS -1.
+vecinoEnOrden(pos(FS,CS),pos(FE,CE),V) :- X is FS - FE, Y is CS - CE, vecinoEnOrdenAux(pos(FS,CS),X,Y,V).
+vecinoEnOrdenAux(pos(FS,CS),X,_,pos(NS,CS)) :- X < 0, NS is FS +1.
+vecinoEnOrdenAux(pos(FS,CS),X,_,pos(NS,CS)) :- X > 0, NS is FS -1.
+vecinoEnOrdenAux(pos(FS,CS),_,Y,pos(FS,NS)) :- Y < 0, NS is CS +1.
+vecinoEnOrdenAux(pos(FS,CS),_,Y,pos(FS,NS)) :- Y > 0, NS is CS -1.
 
-vecinoEnOrdenAux(pos(FS,CS),X,Y,T,pos(NS,CS)) :- X =< 0, NS is FS -1.
-vecinoEnOrdenAux(pos(FS,CS),X,Y,T,pos(NS,CS)) :- X >= 0, NS is FS +1.
-vecinoEnOrdenAux(pos(FS,CS),X,Y,T,pos(FS,NS)) :- Y =< 0, NS is CS -1.
-vecinoEnOrdenAux(pos(FS,CS),X,Y,T,pos(FS,NS)) :- Y >= 0, NS is CS +1.
+vecinoEnOrdenAux(pos(FS,CS),X,_,pos(NS,CS)) :- X =< 0, NS is FS -1.
+vecinoEnOrdenAux(pos(FS,CS),X,_,pos(NS,CS)) :- X >= 0, NS is FS +1.
+vecinoEnOrdenAux(pos(FS,CS),_,Y,pos(FS,NS)) :- Y =< 0, NS is CS -1.
+vecinoEnOrdenAux(pos(FS,CS),_,Y,pos(FS,NS)) :- Y >= 0, NS is CS +1.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%
@@ -88,14 +88,14 @@ vecinoEnOrdenAux(pos(FS,CS),X,Y,T,pos(FS,NS)) :- Y >= 0, NS is CS +1.
 camino(S,F,T,C) :- armarCamino(F,S,T,C,[]).
 
 %%ArmarCamino(+Start, +Finish, +Tablero, -CaminoFinal, +CaminoParcial)
-armarCamino(pos(SX,SY),pos(SX,SY),T,[pos(SX,SY) | X],X).
+armarCamino(pos(SX,SY),pos(SX,SY),_,[pos(SX,SY) | X],X).
 armarCamino(S,F,T,C,X) :- vecinoLibre(S,T,V), not(member(V,X)), armarCamino(V,F,T,C,[S|X]).
 
 %% Ejercicio 6
 %% cantidadDeCaminos(+Inicio, +Fin, +Tablero, ?N) que indique la cantidad de caminos
 %% posibles sin ciclos entre Inicio y Fin.
-cantidadDeCaminos(S,F,T,N) :- ground(N), aggregate_all(contador, camino(S,F,T,_), N2), N = N2.
-cantidadDeCaminos(S,F,T,N) :- var(N), aggregate_all(contador, camino(S,F,T,_), N).
+cantidadDeCaminos(S,F,T,N) :- ground(N), aggregate_all(count, camino(S,F,T,_), N2), N = N2.
+cantidadDeCaminos(S,F,T,N) :- var(N), aggregate_all(count, camino(S,F,T,_), N).
 
 %% Creo que se puede unificar en:
 %% cantidadDeCaminos(S,F,T,N) :- aggregate_all(contador, camino(S,F,T,C), N2), N is N2.
@@ -109,46 +109,11 @@ cantidadDeCaminos(S,F,T,N) :- var(N), aggregate_all(contador, camino(S,F,T,_), N
 %% destino (distancia Manhattan). Por lo tanto, el predicado deberá devolver de a uno,
 %% todos los caminos pero en orden creciente de longitud. NO HACE ESTO!!! es una heuristica
 %% que trata pero no es perfecta
-camino2(S,F,T,C) :- posValida(S,T), posValida(F,T),armarCamino2F2(F,S,T,C,[]).
+camino2(S,F,T,C) :- posValida(S,T), posValida(F,T), armarCamino2(F,S,T,C,[]).
 
-%%VERSION SANTI
-%%armarCamino2S(+Start, +Finish, +Tablero, -CaminoFinal, +CaminoParcial)
-armarCamino2S(pos(SX,SY),pos(FX,FY),_,C,X) :- SX = FX, SY = FY, C is [pos(FX,FY) | X].
-armarCamino2S(pos(SX,SY),pos(FX,FY),T,C,X) :- SX < FX, V is pos(SX+1,SY), continuar(pos(SX,SY),pos(FX,FY),T,C,X,V).
-armarCamino2S(pos(SX,SY),pos(FX,FY),T,C,X) :- SX > FX, V is pos(SX-1,SY), continuar(pos(SX,SY),pos(FX,FY),T,C,X,V).
-armarCamino2S(pos(SX,SY),pos(FX,FY),T,C,X) :- SX = FX, SY < FY, V is pos(SX,SY+1), continuar(pos(SX,SY),pos(FX,FY),T,C,X,V).
-armarCamino2S(pos(SX,SY),pos(FX,FY),T,C,X) :- SX = FX, SY > FY, V is pos(SX,SY-1), continuar(pos(SX,SY),pos(FX,FY),T,C,X,V).
-%%continua con algun vecino (como el original)
-armarCamino2S(pos(SX,SY),pos(FX,FY),T,C,X) :- vecinoLibre(S,T,V), not(member(V,X)), armarCamino2S(V,F,T,C,[S|X]).
-
-%%continuar(+Start, +Finish, +Tablero, -CaminoFinal, +CaminoParcial, +Vecino)
-continuar(S,F,T,C,X,V) :- casilleroLibre(V,T), not(member(V,X)), armarCamino2S(V,F,T,C,[S|X]).
-
-%%No se si se puede hacer asi, o hay que hacer "X is [], armarCamino2(S,F,T,C,X)."
-%%camino2(S,F,T,C) :- posValida(S,T), posValida(F,T), armarCamino2(F,S,T,C,[]).
-
-%%ArmarCamino2(+Start, +Finish, +Tablero, -CaminoFinal, +CaminoParcial)
-
-%% VERSION FEDE
-%%Caso base, llegue al nodo final
-armarCamino2F(pos(FX,FY),pos(FX,FY),_,[pos(FX,FY) | X],X).
-
-%%Caso inductivo, entro primero hacia la direccion q convenga segun distancia Manhattan.
-%%Si alguna coordenada es igual entre S y F entrare en ambos casos de esa coordenada aqui
-armarCamino2F(pos(SX,SY),pos(FX,FY),T,C,X) :- SX =< FX, SY \= FY, NX is SX+1,movValido(pos(NX,SY),T,X), armarCamino2F(pos(NX,SY),pos(FX,FY),T,C,[pos(SX,SY)|X]).
-armarCamino2F(pos(SX,SY),pos(FX,FY),T,C,X) :- SX >= FX, SY \= FY, NX is SX-1,movValido(pos(NX,SY),T,X), armarCamino2F(pos(NX,SY),pos(FX,FY),T,C,[pos(SX,SY)|X]).
-armarCamino2F(pos(SX,SY),pos(FX,FY),T,C,X) :- SY =< FY, SX \= FX, NY is SY+1,movValido(pos(SX,NY),T,X), armarCamino2F(pos(SX,NY),pos(FX,FY),T,C,[pos(SX,SY)|X]).
-armarCamino2F(pos(SX,SY),pos(FX,FY),T,C,X) :- SY >= FY, SX \= FX, NY is SY-1,movValido(pos(SX,NY),T,X), armarCamino2F(pos(SX,NY),pos(FX,FY),T,C,[pos(SX,SY)|X]).
-
-%%Por ultima voy hacia el lado apuesto de F, ya que tengo q generar todos los casos igual.
-armarCamino2F(pos(SX,SY),pos(FX,FY),T,C,X) :- SX > FX, SY \= FY,NX is SX+1,movValido(pos(NX,SY),T,X), armarCamino2F(pos(NX,SY),pos(FX,FY),T,C,[pos(SX,SY)|X]).
-armarCamino2F(pos(SX,SY),pos(FX,FY),T,C,X) :- SX < FX, SY \= FY,NX is SX-1,movValido(pos(NX,SY),T,X), armarCamino2F(pos(NX,SY),pos(FX,FY),T,C,[pos(SX,SY)|X]).
-armarCamino2F(pos(SX,SY),pos(FX,FY),T,C,X) :- SY > FY, SX \= FX,NY is SY+1,movValido(pos(SX,NY),T,X), armarCamino2F(pos(SX,NY),pos(FX,FY),T,C,[pos(SX,SY)|X]).
-armarCamino2F(pos(SX,SY),pos(FX,FY),T,C,X) :- SY < FY, SX \= FX,NY is SY-1,movValido(pos(SX,NY),T,X), armarCamino2F(pos(SX,NY),pos(FX,FY),T,C,[pos(SX,SY)|X]).
-
-
-armarCamino2F2(pos(SX,SY),pos(SX,SY),T,[pos(SX,SY) | X],X).
-armarCamino2F2(S,F,T,C,X) :- vecinoEnOrden(S,F,T,V), movValido(V,T,X),armarCamino2F2(V,F,T,C,[S|X]).
+%%armarCamino2(+Start, +Finish, +Tablero, -CaminoFinal, +CaminoParcial)
+armarCamino2(pos(SX,SY),pos(SX,SY),_,[pos(SX,SY) | X],X).
+armarCamino2(S,F,T,C,X) :- vecinoEnOrden(S,F,V), movValido(V,T,X),armarCamino2(V,F,T,C,[S|X]).
 
 
 
