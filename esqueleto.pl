@@ -74,8 +74,7 @@ vecinoLibre(pos(F,C),T,V) :- vecino(pos(F,C),T,V), casilleroLibre(V,T).
 camino(S,F,T,C) :- armarCamino(S,F,T,C,[]).
 
 %%ArmarCamino(+Start, +Finish, +Tablero, -CaminoFinal, +CaminoParcial)
-%% TODO VALE ARMAR LA LISTA DE ESA FORMA?
-armarCamino(pos(SX,SY),pos(SX,SY),T,C,X) :- C is [pos(SX,SY) | X].
+armarCamino(pos(SX,SY),pos(SX,SY),T,[pos(SX,SY) | X],X).
 armarCamino(S,F,T,C,X) :- vecinoLibre(S,T,V), not(member(V,X)), armarCamino(V,F,T,C,[S|X]).
 
 %% Ejercicio 6
