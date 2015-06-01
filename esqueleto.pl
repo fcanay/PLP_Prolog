@@ -23,7 +23,7 @@ tablero(chorizo5x2obstaculo, T) :- tablero(5, 2, T), ocupar(pos(3, 0), T).
 tablero(libre2x2, T) :- tablero(2, 2, T).
 tablero(libre3x3, T) :- tablero(3, 3, T).
 tablero(dona3x3, T) :- tablero(3, 3, T), ocupar(pos(1, 1), T).
-tablero(cueva5x5, T) :- tablero(5, 5, T), ocupar(pos(1, 1), T), ocupar(pos(1, 2), T), ocupar(pos(1, 3), T), ocupar(pos(2, 3), T) ocupar(pos(3, 1), T), ocupar(pos(3, 2), T), ocupar(pos(3, 3), T).
+tablero(cueva5x5, T) :- tablero(5, 5, T), ocupar(pos(1, 1), T), ocupar(pos(1, 2), T), ocupar(pos(1, 3), T), ocupar(pos(2, 3), T), ocupar(pos(3, 1), T), ocupar(pos(3, 2), T), ocupar(pos(3, 3), T).
 tablero(zigzag5x5restringido, T) :- tablero(5, 6, T), ocupar(pos(1, 1), T), ocupar(pos(0, 2), T), ocupar(pos(3, 1), T), ocupar(pos(3, 2), T), ocupar(pos(2, 3), T), ocupar(pos(1, 4), T), ocupar(pos(3, 5), T), ocupar(pos(4, 5), T), ocupar(pos(3, 4), T).
 tablero(zigzag5x5, T) :- tablero(5, 6, T), ocupar(pos(1, 1), T), ocupar(pos(0, 2), T), ocupar(pos(3, 1), T), ocupar(pos(3, 2), T), ocupar(pos(2, 3), T), ocupar(pos(1, 4), T).
 
@@ -38,7 +38,7 @@ tablero(F,C,T) :- length(T,F), allOflenghth(T,C).
 
 %% Ejercicio 2
 %% ocupar(+Pos,?Tablero) será verdadero cuando la posición indicada esté ocupada.
-ocupar(pos(F,C),T) :- nth0(C,T,F1), nth0(C,F1,ocupada).
+ocupar(pos(F,C),T) :- nth0(F,T,F1), nth0(C,F1,ocupada).
 
 %% Ejercicio 3
 %% vecino(+Pos, +Tablero, -PosVecino) será verdadero cuando PosVecino sea
@@ -70,7 +70,9 @@ vecinoLibre(pos(F,C),T,V) :- vecino(pos(F,C),T,V), casilleroLibre(V,T).
 %% todas las alternativas eventualmente.
 %% Consejo: Utilizar una lista auxiliar con las posiciones visitadas
 
-%%Checkeamos posValida o no vale la pena? No vale la pena, se chekea en vecinosLibres
+%%Checkeamos posValida o no vale la pena? No vale la pena, se chekea en vecinosLibres. Santi: Estas seguro? Me parece que va este eh
+%%camino(pos(FS,CS),pos(FF,CF),T,C) :- posValida(pos(FS,CS),T), posValida(pos(FF,CF),T), armarCamino(pos(FS,CS),pos(FF,CF),T,C,[]).
+%%Sino camino(pos(100,100), pos(100,100), [], C) da [pos(100,100)]
 camino(S,F,T,C) :- armarCamino(F,S,T,C,[]).
 
 %%ArmarCamino(+Start, +Finish, +Tablero, -CaminoFinal, +CaminoParcial)
