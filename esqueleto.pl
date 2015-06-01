@@ -37,10 +37,10 @@ ocupar(pos(F,C),T) :- nth0(C,T,F1), nth0(C,F1,ocupada).
 %% dado que el robot se moverá en forma ortogonal.
 vecino(pos(F,C),T,V) :- posValida(pos(F,C),T), vecinoAux(pos(F,C),T,V).
 
-vecinoAux(pos(F,C),_,V) :- F > 0, F1 is F-1,V is pos(F1,C).
-vecinoAux(pos(F,C),_,V) :- C > 0, C1 is C-1,V is pos(F,C1).
-vecinoAux(pos(F,C),T,V) :- numFilas(T,NF), F < NF, F1 is F+1,V is pos(F1,C).
-vecinoAux(pos(F,C),T,V) :- numCol(T,NC), C < NC, C1 is C+1,V is pos(F,C1).
+vecinoAux(pos(F,C),_,pos(F1,C)) :- F > 0, F1 is F-1.
+vecinoAux(pos(F,C),_,pos(F,C1)) :- C > 0, C1 is C-1.
+vecinoAux(pos(F,C),T,pos(F1,C)) :- numFilas(T,NF), F < NF, F1 is F+1.
+vecinoAux(pos(F,C),T,pos(F,C1)) :- numCol(T,NC), C < NC, C1 is C+1.
 
 %% Ejercicio 4
 %% vecinoLibre(+Pos, +Tablero, -PosVecino) idem vecino/3 pero además PosVecino
