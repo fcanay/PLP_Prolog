@@ -117,20 +117,20 @@ continuar(S,F,T,C,X,V) :- casilleroLibre(V,T), not(member(V,X)), armarCamino2S(V
 
 %% VERSION FEDE
 %%Caso base, llegue al nodo final
-armarCamino2F(pos(SX,SY),pos(FX,FY),_,C,X) :- SX = FX, SY = FY, C is [pos(FX,FY) | X].
+armarCamino2F(pos(FX,FY),pos(FX,FY),_,[pos(FX,FY) | X],X).
 
 %%Caso inductivo, entro primero hacia la direccion q convenga segun distancia Manhattan.
 %%Si alguna coordenada es igual entre S y F entrare en ambos casos de esa coordenada aqui
-armarCamino2F(pos(SX,SY),pos(FX,FY),T,C,X) :- SX =< FX, SY \= FY, movValido(pos(SX+1,SY),T,X), armarCamino2F(pos(SX+1,SY),pos(FX,FY),T,C,[pos(SX,SY)|X]).
-armarCamino2F(pos(SX,SY),pos(FX,FY),T,C,X) :- SX >= FX, SY \= FY, movValido(pos(SX-1,SY),T,X), armarCamino2F(pos(SX-1,SY),pos(FX,FY),T,C,[pos(SX,SY)|X]).
-armarCamino2F(pos(SX,SY),pos(FX,FY),T,C,X) :- SY =< FY, SX \= FX, movValido(pos(SX,SY+1),T,X), armarCamino2F(pos(SX,SY+1),pos(FX,FY),T,C,[pos(SX,SY)|X]).
-armarCamino2F(pos(SX,SY),pos(FX,FY),T,C,X) :- SY >= FY, SX \= FX, movValido(V,T,X), armarCamino2F(V,pos(FX,FY),T,C,[pos(SX,SY)|X]).
+armarCamino2F(pos(SX,SY),pos(FX,FY),T,C,X) :- SX =< FX, SY \= FY, NX is SX+1,movValido(pos(NX,SY),T,X), armarCamino2F(pos(NX,SY),pos(FX,FY),T,C,[pos(SX,SY)|X]).
+armarCamino2F(pos(SX,SY),pos(FX,FY),T,C,X) :- SX >= FX, SY \= FY, NX is SX-1,movValido(pos(NX,SY),T,X), armarCamino2F(pos(NX,SY),pos(FX,FY),T,C,[pos(SX,SY)|X]).
+armarCamino2F(pos(SX,SY),pos(FX,FY),T,C,X) :- SY =< FY, SX \= FX, NY is SY+1,movValido(pos(SX,NY),T,X), armarCamino2F(pos(SX,NY),pos(FX,FY),T,C,[pos(SX,SY)|X]).
+armarCamino2F(pos(SX,SY),pos(FX,FY),T,C,X) :- SY >= FY, SX \= FX, NY is SY-1,movValido(pos(SX,NY),T,X), armarCamino2F(pos(SX,NY),pos(FX,FY),T,C,[pos(SX,SY)|X]).
 
 %%Por ultima voy hacia el lado apuesto de F, ya que tengo q generar todos los casos igual.
-armarCamino2F(pos(SX,SY),pos(FX,FY),T,C,X) :- SX > FX, SY \= FY,movValido(pos(SX+1,SY),T,X), armarCamino2F(pos(SX+1,SY),pos(FX,FY),T,C,[pos(SX,SY)|X]).
-armarCamino2F(pos(SX,SY),pos(FX,FY),T,C,X) :- SX < FX, SY \= FY,movValido(pos(SX-1,SY),T,X), armarCamino2F(pos(SX-1,SY),pos(FX,FY),T,C,[pos(SX,SY)|X]).
-armarCamino2F(pos(SX,SY),pos(FX,FY),T,C,X) :- SY > FY, SX \= FX,movValido(pos(SX,SY+1),T,X), armarCamino2F(pos(SX,SY+1),pos(FX,FY),T,C,[pos(SX,SY)|X]).
-armarCamino2F(pos(SX,SY),pos(FX,FY),T,C,X) :- SY < FY, SX \= FX,movValido(pos(SX,SY-1),T,X), armarCamino2F(pos(SX,SY-1),pos(FX,FY),T,C,[pos(SX,SY)|X]).
+armarCamino2F(pos(SX,SY),pos(FX,FY),T,C,X) :- SX > FX, SY \= FY,NX is SX+1,movValido(pos(NX,SY),T,X), armarCamino2F(pos(NX,SY),pos(FX,FY),T,C,[pos(SX,SY)|X]).
+armarCamino2F(pos(SX,SY),pos(FX,FY),T,C,X) :- SX < FX, SY \= FY,NX is SX-1,movValido(pos(NX,SY),T,X), armarCamino2F(pos(NX,SY),pos(FX,FY),T,C,[pos(SX,SY)|X]).
+armarCamino2F(pos(SX,SY),pos(FX,FY),T,C,X) :- SY > FY, SX \= FX,NY is SY+1,movValido(pos(SX,NY),T,X), armarCamino2F(pos(SX,NY),pos(FX,FY),T,C,[pos(SX,SY)|X]).
+armarCamino2F(pos(SX,SY),pos(FX,FY),T,C,X) :- SY < FY, SX \= FX,NY is SY-1,movValido(pos(SX,NY),T,X), armarCamino2F(pos(SX,NY),pos(FX,FY),T,C,[pos(SX,SY)|X]).
 
 
 
