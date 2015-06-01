@@ -70,7 +70,9 @@ vecinoLibre(pos(F,C),T,V) :- vecino(pos(F,C),T,V), casilleroLibre(V,T).
 %% todas las alternativas eventualmente.
 %% Consejo: Utilizar una lista auxiliar con las posiciones visitadas
 
-%%Checkeamos posValida o no vale la pena? No vale la pena, se chekea en vecinosLibres
+%%Checkeamos posValida o no vale la pena? No vale la pena, se chekea en vecinosLibres. Santi: Estas seguro? Me parece que va este eh
+%%camino(pos(FS,CS),pos(FF,CF),T,C) :- posValida(pos(FS,CS),T), posValida(pos(FF,CF),T), armarCamino(pos(FS,CS),pos(FF,CF),T,C,[]).
+%%Sino camino(pos(100,100), pos(100,100), [], C) da [pos(100,100)]
 camino(S,F,T,C) :- armarCamino(F,S,T,C,[]).
 
 %%ArmarCamino(+Start, +Finish, +Tablero, -CaminoFinal, +CaminoParcial)
