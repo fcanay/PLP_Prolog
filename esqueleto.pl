@@ -15,7 +15,7 @@ numCol(T,X) :- last(T,L), length(L,X).
 movValido(P,T,X) :- posValida(P,T),casilleroLibre(P,T),not(member(P,X)).
 
 :- dynamic llegueEn/2.
-tardoMasQueAntes(P,L) :- llegueEn(P,X), X =< L . 
+tardoMasQueAntes(P,L) :- llegueEn(P,X), X < L . 
 
 %%Ejemplos
 tablero(ej5x5, T) :-tablero(5, 5, T),ocupar(pos(1, 1), T),ocupar(pos(1, 2), T).
