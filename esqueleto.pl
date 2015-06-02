@@ -97,10 +97,6 @@ armarCamino(S,F,T,C,X) :- vecinoLibre(S,T,V), not(member(V,X)), armarCamino(V,F,
 %% Ejercicio 6
 %% cantidadDeCaminos(+Inicio, +Fin, +Tablero, ?N) que indique la cantidad de caminos
 %% posibles sin ciclos entre Inicio y Fin.
-%%cantidadDeCaminos(S,F,T,N) :- ground(N), aggregate_all(count, camino(S,F,T,_), N2), N = N2.
-%%cantidadDeCaminos(S,F,T,N) :- var(N), aggregate_all(count, camino(S,F,T,_), N).
-
-%% Creo que se puede unificar en:
 cantidadDeCaminos(S,F,T,N) :- aggregate_all(count, camino(S,F,T,_), N2), N is N2.
 
 %% Ejercicio 7
@@ -129,7 +125,7 @@ armarCamino2(S,F,T,C,X) :- vecinoEnOrden(S,F,V), movValido(V,T,X),armarCamino2(V
 camino3(S,F,T,C) :- posValida(S,T), posValida(F,T), assertz(llegueEn(F,0)), armarCamino3(F,S,T,C,[]).
 
 armarCamino3(pos(SX,SY),pos(SX,SY),_,[pos(SX,SY) | X],X).
-armarCamino3(S,F,T,C,X) :- vecinoEnOrden(S,F,V), movValido(V,T,X), length(X,L1), L is L1+1, not(tardoMasQueAntes(V,L)), retractall(llegueEn(V,_)), assertz(llegueEn(V,L)), armarCamino3(V,F,T,C,[S|X]).
+armarCamino3(S,F,T,C,X) :- vecinoEnOrden(S,F,V), movValido(V,T,X), length(X,L1), L is L1+1, not(tardoMasQueAntes(V,L)), retract(llegueEn(V,_)), assertz(llegueEn(V,L)), armarCamino3(V,F,T,C,[S|X]).
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%
