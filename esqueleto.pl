@@ -14,6 +14,9 @@ numCol(T,X) :- last(T,L), length(L,X).
 
 movValido(P,T,X) :- posValida(P,T),casilleroLibre(P,T),not(member(P,X)).
 
+:- dynamic llegueEn/2.
+tardoMasQueAntes(P,L) :- llegueEn(P,X), X =< L . 
+
 %%Ejemplos
 tablero(ej5x5, T) :-tablero(5, 5, T),ocupar(pos(1, 1), T),ocupar(pos(1, 2), T).
 tablero(chorizo2x4, T) :- tablero(2, 4, T).
@@ -123,7 +126,11 @@ armarCamino2(S,F,T,C,X) :- vecinoEnOrden(S,F,V), movValido(V,T,X),armarCamino2(V
 %% desde Inicio en más de 6 pasos.
 %% Notar que dos ejecuciones de camino3/4 con los mismos argumentos deben dar los mismos resultados.
 %% En este ejercicio se permiten el uso de predicados: dynamic/1, asserta/1, assertz/1 y retractall/1.
-camino3(_,_,_,_).
+camino3(S,F,T,C) :- posValida(S,T), posValida(F,T),assertz(llegueEn(F,0)),armarCamino3(F,S,T,C,[]).
+
+armarCamino3(pos(SX,SY),pos(SX,SY),_,[pos(SX,SY) | X],X).
+armarCamino3(S,F,T,C,X) :- vecinoEnOrden(S,F,V), movValido(V,T,X),length(X,L1),L is L1+1,not(tardoMasQueAntes(V,L)),retract(llegueEn(V,_)),assertz(llegueEn(V,L)),armarCamino3(V,F,T,C,[S|X]).
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%
 %% Tableros simultáneos
