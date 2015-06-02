@@ -29,7 +29,7 @@ tablero(dona3x3, T) :- tablero(3, 3, T), ocupar(pos(1, 1), T).
 tablero(cueva6x6, T) :- tablero(6, 6, T), ocupar(pos(1, 1), T), ocupar(pos(1, 2), T), ocupar(pos(1, 3), T), ocupar(pos(1, 4), T), ocupar(pos(2, 4), T), ocupar(pos(3, 4), T), ocupar(pos(4, 4), T), ocupar(pos(4, 3), T),ocupar(pos(4, 2), T), ocupar(pos(4, 1), T).
 tablero(zigzag5x5restringido, T) :- tablero(5, 6, T), ocupar(pos(1, 1), T), ocupar(pos(0, 2), T), ocupar(pos(3, 1), T), ocupar(pos(3, 2), T), ocupar(pos(2, 3), T), ocupar(pos(1, 4), T), ocupar(pos(3, 5), T), ocupar(pos(4, 5), T), ocupar(pos(3, 4), T).
 tablero(zigzag5x5, T) :- tablero(5, 6, T), ocupar(pos(1, 1), T), ocupar(pos(0, 2), T), ocupar(pos(3, 1), T), ocupar(pos(3, 2), T), ocupar(pos(2, 3), T), ocupar(pos(1, 4), T).
-
+tablero(chorizo6x3, T) :- tablero(6, 3, T), ocupar(pos(1, 1), T), ocupar(pos(2, 1), T),ocupar(pos(3, 1), T),ocupar(pos(4, 1), T). %tablero(chorizo6x3, T)
 
 %%No chekea si la posicion es valida, se deberia hacer previamente.
 casilleroLibre(pos(F,C),T) :- nth0(F,T,F1), nth0(C,F1,X), var(X).
