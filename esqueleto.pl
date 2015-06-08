@@ -139,7 +139,7 @@ armarCamino2(S,F,T,C,X) :- vecinoEnOrden(S,F,V), movValido(V,T,X),armarCamino2(V
 %% desde Inicio en más de 6 pasos.
 %% Notar que dos ejecuciones de camino3/4 con los mismos argumentos deben dar los mismos resultados.
 %% En este ejercicio se permiten el uso de predicados: dynamic/1, asserta/1, assertz/1 y retractall/1.
-camino3(S,F,T,C) :-  retractall(llegueEn(_,_)),posValida(S,T), posValida(F,T), assertz(llegueEn(F,0)), armarCamino3(F,S,T,C,[]),trace.
+camino3(S,F,T,C) :-  retractall(llegueEn(_,_)),posValida(S,T), posValida(F,T), assertz(llegueEn(F,0)), armarCamino3(F,S,T,C,[]).
 
 %%ArmarCamino3(+Start, +Finish, +Tablero, -CaminoFinal, +CaminoParcial)
 armarCamino3(pos(SX,SY),pos(SX,SY),_,[pos(SX,SY) | X],X).
@@ -161,15 +161,50 @@ caminoDual(S,F,T1,T2,C) :- posValidaYLibre(S,T2),posValidaYLibre(F,T2),camino(S,
 %%%%%%%%%%%%%%%%%%%%%%%%
 %% Tests
 %%%%%%%%%%%%%%%%%%%%%%%%
-esLaPosicion(F,C,X,T) :- nth0(F,T,F1), nth0(C,F1,RES), RES = X.
-
 test(all) :- test(introductorios), test(caminos).
 
 test(introductorios) :- test(tablero), test(ocupar), test(vecino), test(vecino2), test(vecinoLibre).
-test(caminos).
+test(caminos) :- test(camino1), test(camino2), test(camino3), test(caminoDual). 
+test(camino1) :- test(camino1_1), test(camino1_2), test(cantidadCamino1_1), test(cantidadCamino1_2), test(cantidadCamino1_3).
+test(camino2) :- test(camino2_1), test(camino2_2), test(cantidadCamino2_1), test(cantidadCamino2_2), test(cantidadCamino2_3).
+test(camino3) :- test(camino3_1), test(camino3_2), test(cantidadCamino3_1), test(cantidadCamino3_2), test(cantidadCamino3_3).
+test(caminoDual) :- test(caminoDual_1), test(caminoDual_2).
 
+%%introductorios
 test(tablero) :- tablero(2,2,T), length(T, L), L is 2, nth0(1,T,F1), length(F1, 2).
 test(ocupar) :- tablero(libre3x3, T), ocupar(pos(1,1), T), nth0(1,T,F1), nth0(1,F1,RES), ground(RES).
-test(vecino) :- tablero(libre3x3, T), vecino(pos(0,0), T, V), esLaPosicion(0,1,V,T).
-test(vecino2) :- tablero(libre3x3, T), vecino(pos(0,0), T, V), esLaPosicion(1,0,V,T).
-test(vecinoLibre) :- tablero(libre3x3, T), ocupar(pos(0,1), T), vecinoLibre(pos(0,0), T, V), esLaPosicion(1,1,V,T).
+test(vecino) :- tablero(libre3x3, T), vecino(pos(0,0), T, V), V = pos(1,0).
+test(vecino2) :- tablero(libre3x3, T), vecino(pos(0,0), T, V), V = pos(0,1).
+test(vecinoLibre) :- tablero(libre3x3, T), ocupar(pos(0,1), T), vecinoLibre(pos(0,0), T, V),  V = pos(1,0).
+
+%%Camino1
+test(camino1_1) :- tablero(libre2x2, T), camino(pos(0,0),pos(1,1),T,C), C = [pos(0,0), pos(0,1), pos(1,1)].
+test(camino1_2) :- tablero(libre2x2, T), camino(pos(0,0),pos(1,1),T,C), C = [pos(0,0), pos(1,0), pos(1,1)].
+
+test(cantidadCamino1_1) :- tablero(libre3x3, T), cantidadDeCaminos(pos(0,0),pos(2,2),T,N), N = 12.
+test(cantidadCamino1_2) :- tablero(chorizo2x4, T), cantidadDeCaminos(pos(1,2),pos(1,3),T,N), N = 4.
+test(cantidadCamino1_3) :- tablero(chorizo5x2obstaculo, T), cantidadDeCaminos(pos(2,0),pos(4,0),T,N), N = 3.
+
+%%Camino2
+test(camino2_1) :- tablero(libre2x2, T), camino2(pos(0,0),pos(1,1),T,C), C = [pos(0,0), pos(0,1), pos(1,1)].
+test(camino2_2) :- tablero(libre2x2, T), camino2(pos(0,0),pos(1,1),T,C), C = [pos(0,0), pos(1,0), pos(1,1)].
+
+test(cantidadCamino2_1) :- tablero(libre3x3, T), cantidadDeCaminosConCamino2(pos(0,0),pos(2,2),T,N), N = 12.
+test(cantidadCamino2_2) :- tablero(chorizo2x4, T), cantidadDeCaminosConCamino2(pos(1,2),pos(1,3),T,N), N = 4.
+test(cantidadCamino2_3) :- tablero(chorizo5x2obstaculo, T), cantidadDeCaminosConCamino2(pos(2,0),pos(4,0),T,N), N = 3.
+
+%%Camino3
+test(camino3_1) :- tablero(libre2x2, T), camino3(pos(0,0),pos(1,1),T,C), C = [pos(0,0), pos(0,1), pos(1,1)].
+test(camino3_2) :- tablero(libre2x2, T), camino3(pos(0,0),pos(1,1),T,C), C = [pos(0,0), pos(1,0), pos(1,1)].
+
+test(cantidadCamino3_1) :- tablero(libre3x3, T), cantidadDeCaminosConCamino3(pos(0,0),pos(2,2),T,N), N = 6.
+test(cantidadCamino3_2) :- tablero(chorizo2x4, T), cantidadDeCaminosConCamino3(pos(1,2),pos(1,3),T,N), N = 1.
+test(cantidadCamino3_3) :- tablero(chorizo5x2obstaculo, T), cantidadDeCaminosConCamino3(pos(2,0),pos(4,0),T,N), N = 1.
+
+test(caminoDual_1) :- tablero(libre3x3, T1), tablero(libre2x2, T2), cantidadDeCaminosConDual(pos(0,0),pos(1,1),T1,T2,N), N = 2.
+test(caminoDual_2) :- tablero(libre3x3, T1), tablero(libre2x2, T2), not(caminoDual(pos(0,0),pos(2,2),T1,T2,_)).
+
+%%Solo para uso de test
+cantidadDeCaminosConCamino2(S,F,T,N) :- aggregate_all(count, camino2(S,F,T,_), N2), N is N2.
+cantidadDeCaminosConCamino3(S,F,T,N) :- aggregate_all(count, camino3(S,F,T,_), N2), N is N2.
+cantidadDeCaminosConDual(S,F,T1,T2,N) :- aggregate_all(count, caminoDual(S,F,T1,T2,_), N2), N is N2.
