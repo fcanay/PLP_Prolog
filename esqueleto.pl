@@ -135,3 +135,20 @@ armarCamino3(S,F,T,C,X) :- vecinoEnOrden(S,F,V), movValido(V,T,X), length(X,L1),
 %% sólo por celdas transitables de ambos tableros.
 %% Nota: Es posible una implementación que resuelva en forma inmediata casos en los que trivialmente no existe camino dual posible.
 caminoDual(S,F,T1,T2,C) :- posValidaYLibre(S,T2),posValidaYLibre(F,T2),camino(S,F,T1,C),camino(S,F,T2,C).
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%
+%% Tests
+%%%%%%%%%%%%%%%%%%%%%%%%
+esLaPosicion(F,C,X,T) :- nth0(F,T,F1), nth0(C,F1,RES), RES = X.
+
+test(all) :- test(introductorios), test(caminos).
+
+test(introductorios) :- test(tablero), test(ocupar), test(vecino), test(vecino2), test(vecinoLibre).
+test(caminos).
+
+test(tablero) :- tablero(2,2,T), length(T, L), L is 2, nth0(1,T,F1), length(F1, 2).
+test(ocupar) :- tablero(libre3x3, T), ocupar(pos(1,1), T), nth0(1,T,F1), nth0(1,F1,RES), ground(RES).
+test(vecino) :- tablero(libre3x3, T), vecino(pos(0,0), T, V), esLaPosicion(0,1,V,T).
+test(vecino2) :- tablero(libre3x3, T), vecino(pos(0,0), T, V), esLaPosicion(1,0,V,T).
+test(vecinoLibre) :- tablero(libre3x3, T), ocupar(pos(0,1), T), vecinoLibre(pos(0,0), T, V), esLaPosicion(1,1,V,T).
