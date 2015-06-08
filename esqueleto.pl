@@ -3,22 +3,37 @@
 %%%%%%%%%%%%%%%%%%%%%%%%
 
 %%AUX
+
+%% posValida(+Pos, +T).
 posValida(pos(F,C),T) :- F >= 0, C >= 0, numFilas(T,F1), F =< F1, numCol(T,C1), C =< C1.
 
+%%allOflenghth(+Lista, +Longitud).
 allOflenghth([],_).
 allOflenghth([X|L],C) :- length(X,C), allOflenghth(L,C).
 
+%%numFilas(+Tablero, ?Longitud).
 numFilas(T,X) :- length(T,X).
 
+%%numFilas(+Tablero, ?Longitud).
 numCol(T,X) :- last(T,L), length(L,X).
 
+%%posValidaYLibre(+Pos, +Tablero).
 posValidaYLibre(P,T) :- posValida(P,T),casilleroLibre(P,T).
 
+%%casilleroLibre(+Pos, +Tablero).
+%%No chekea si la posicion es valida, se deberia hacer previamente.
+casilleroLibre(pos(F,C),T) :- nth0(F,T,F1), nth0(C,F1,X), var(X).
+
+%%movValido(+Pos, +Tablero, +Camino).
 movValido(P,T,X) :- posValidaYLibre(P,T),not(member(P,X)).
 
+%%llegueEn(?Pos, ?Pasos).
 :- dynamic llegueEn/2.
+
+%%tardoMasQueAntes(+Pos, +Pasos).
 tardoMasQueAntes(P,L) :- llegueEn(P,X), X < L . 
 
+%%tablero(+Nombre, ?Tablero).
 %%Ejemplos
 tablero(ej5x5, T) :-tablero(5, 5, T),ocupar(pos(1, 1), T),ocupar(pos(1, 2), T).
 tablero(chorizo2x4, T) :- tablero(2, 4, T).
@@ -33,8 +48,6 @@ tablero(zigzag5x5restringido, T) :- tablero(5, 6, T), ocupar(pos(1, 1), T), ocup
 tablero(zigzag5x5, T) :- tablero(5, 6, T), ocupar(pos(1, 1), T), ocupar(pos(0, 2), T), ocupar(pos(3, 1), T), ocupar(pos(3, 2), T), ocupar(pos(2, 3), T), ocupar(pos(1, 4), T).
 tablero(chorizo6x3, T) :- tablero(6, 3, T), ocupar(pos(1, 1), T), ocupar(pos(2, 1), T),ocupar(pos(3, 1), T),ocupar(pos(4, 1), T). %tablero(chorizo6x3, T)
 
-%%No chekea si la posicion es valida, se deberia hacer previamente.
-casilleroLibre(pos(F,C),T) :- nth0(F,T,F1), nth0(C,F1,X), var(X).
 
 %% Ejercicio 1
 %% tablero(+Filas,+Columnas,-Tablero) instancia una estructura de tablero en blanco
@@ -52,6 +65,7 @@ ocupar(pos(F,C),T) :- nth0(F,T,F1), nth0(C,F1,ocupada).
 %% dado que el robot se moverá en forma ortogonal.
 vecino(pos(F,C),T,V) :- posValida(pos(F,C),T), vecinoAux(pos(F,C),T,V).
 
+%%vecinoAux(+Inicio, +Tablero, ?Vecino).
 vecinoAux(pos(F,C),_,pos(F1,C)) :- F > 0, F1 is F-1.
 vecinoAux(pos(F,C),_,pos(F,C1)) :- C > 0, C1 is C-1.
 vecinoAux(pos(F,C),T,pos(F1,C)) :- numFilas(T,NF), F < NF, F1 is F+1.
@@ -62,7 +76,12 @@ vecinoAux(pos(F,C),T,pos(F,C1)) :- numCol(T,NC), C < NC, C1 is C+1.
 %% debe ser una celda transitable (no ocupada) en el Tablero
 vecinoLibre(pos(F,C),T,V) :- vecino(pos(F,C),T,V), casilleroLibre(V,T).
 
+
+%%vecinoEnOrden(+Inicio, +Fin, -Vecino).
 vecinoEnOrden(pos(FS,CS),pos(FE,CE),V) :- X is FS - FE, Y is CS - CE, vecinoEnOrdenAux(pos(FS,CS),X,Y,V).
+
+
+%%vecinoEnOrdenAux(+Inicio, +X,+Y, -Vecino).
 vecinoEnOrdenAux(pos(FS,CS),X,_,pos(NS,CS)) :- X < 0, NS is FS +1.
 vecinoEnOrdenAux(pos(FS,CS),X,_,pos(NS,CS)) :- X > 0, NS is FS -1.
 vecinoEnOrdenAux(pos(FS,CS),_,Y,pos(FS,NS)) :- Y < 0, NS is CS +1.
@@ -107,7 +126,7 @@ cantidadDeCaminos(S,F,T,N) :- aggregate_all(count, camino(S,F,T,_), N2), N is N2
 %% que trata pero no es perfecta
 camino2(S,F,T,C) :- posValidaYLibre(S,T), posValidaYLibre(F,T), armarCamino2(F,S,T,C,[]).
 
-%%armarCamino2(+Start, +Finish, +Tablero, -CaminoFinal, +CaminoParcial)
+%%ArmarCamino2(+Start, +Finish, +Tablero, -CaminoFinal, +CaminoParcial)
 armarCamino2(pos(SX,SY),pos(SX,SY),_,[pos(SX,SY) | X],X).
 armarCamino2(S,F,T,C,X) :- vecinoEnOrden(S,F,V), movValido(V,T,X),armarCamino2(V,F,T,C,[S|X]).
 
@@ -121,6 +140,8 @@ armarCamino2(S,F,T,C,X) :- vecinoEnOrden(S,F,V), movValido(V,T,X),armarCamino2(V
 %% Notar que dos ejecuciones de camino3/4 con los mismos argumentos deben dar los mismos resultados.
 %% En este ejercicio se permiten el uso de predicados: dynamic/1, asserta/1, assertz/1 y retractall/1.
 camino3(S,F,T,C) :-  retractall(llegueEn(_,_)),posValida(S,T), posValida(F,T), assertz(llegueEn(F,0)), armarCamino3(F,S,T,C,[]),trace.
+
+%%ArmarCamino3(+Start, +Finish, +Tablero, -CaminoFinal, +CaminoParcial)
 armarCamino3(pos(SX,SY),pos(SX,SY),_,[pos(SX,SY) | X],X).
 armarCamino3(S,F,T,C,X) :- vecinoEnOrden(S,F,V), movValido(V,T,X), length(X,L1), L is L1+1, not(tardoMasQueAntes(V,L)), retractall(llegueEn(V,_)), assertz(llegueEn(V,L)), armarCamino3(V,F,T,C,[S|X]).
 
