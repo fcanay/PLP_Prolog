@@ -12,7 +12,9 @@ numFilas(T,X) :- length(T,X).
 
 numCol(T,X) :- last(T,L), length(L,X).
 
-movValido(P,T,X) :- posValida(P,T),casilleroLibre(P,T),not(member(P,X)).
+posValidaYLibre(P,T) :- posValida(P,T),casilleroLibre(P,T).
+
+movValido(P,T,X) :- posValidaYLibre(P,T),not(member(P,X)).
 
 :- dynamic llegueEn/2.
 tardoMasQueAntes(P,L) :- llegueEn(P,X), X < L . 
@@ -84,11 +86,7 @@ vecinoEnOrdenAux(pos(FS,CS),_,Y,pos(FS,NS)) :- Y >= 0, NS is CS +1.
 %% Notar que la cantidad de caminos es finita y por ende se tiene que poder recorrer
 %% todas las alternativas eventualmente.
 %% Consejo: Utilizar una lista auxiliar con las posiciones visitadas
-
-%%Checkeamos posValida o no vale la pena? No vale la pena, se chekea en vecinosLibres. Santi: Estas seguro? Me parece que va este:
-%%camino(pos(FS,CS),pos(FF,CF),T,C) :- posValida(pos(FS,CS),T), posValida(pos(FF,CF),T), armarCamino(pos(FS,CS),pos(FF,CF),T,C,[]).
-%%Sino camino(pos(100,100), pos(100,100), [], C) da [pos(100,100)]
-camino(S,F,T,C) :- armarCamino(F,S,T,C,[]).
+camino(S,F,T,C) :- posValidaYLibre(S,T), posValidaYLibre(F,T),armarCamino(F,S,T,C,[]).
 
 %%ArmarCamino(+Start, +Finish, +Tablero, -CaminoFinal, +CaminoParcial)
 armarCamino(pos(SX,SY),pos(SX,SY),_,[pos(SX,SY) | X],X).
@@ -107,7 +105,7 @@ cantidadDeCaminos(S,F,T,N) :- aggregate_all(count, camino(S,F,T,_), N2), N is N2
 %% destino (distancia Manhattan). Por lo tanto, el predicado deberá devolver de a uno,
 %% todos los caminos pero en orden creciente de longitud. NO HACE ESTO!!! es una heuristica
 %% que trata pero no es perfecta
-camino2(S,F,T,C) :- posValida(S,T), posValida(F,T), armarCamino2(F,S,T,C,[]).
+camino2(S,F,T,C) :- posValidaYLibre(S,T), posValidaYLibre(F,T), armarCamino2(F,S,T,C,[]).
 
 %%armarCamino2(+Start, +Finish, +Tablero, -CaminoFinal, +CaminoParcial)
 armarCamino2(pos(SX,SY),pos(SX,SY),_,[pos(SX,SY) | X],X).
@@ -122,8 +120,7 @@ armarCamino2(S,F,T,C,X) :- vecinoEnOrden(S,F,V), movValido(V,T,X),armarCamino2(V
 %% desde Inicio en más de 6 pasos.
 %% Notar que dos ejecuciones de camino3/4 con los mismos argumentos deben dar los mismos resultados.
 %% En este ejercicio se permiten el uso de predicados: dynamic/1, asserta/1, assertz/1 y retractall/1.
-camino3(S,F,T,C) :- posValida(S,T), posValida(F,T), assertz(llegueEn(F,0)), armarCamino3(F,S,T,C,[]).
-
+camino3(S,F,T,C) :-  retractall(llegueEn(_,_)),posValida(S,T), posValida(F,T), assertz(llegueEn(F,0)), armarCamino3(F,S,T,C,[]),trace.
 armarCamino3(pos(SX,SY),pos(SX,SY),_,[pos(SX,SY) | X],X).
 armarCamino3(S,F,T,C,X) :- vecinoEnOrden(S,F,V), movValido(V,T,X), length(X,L1), L is L1+1, not(tardoMasQueAntes(V,L)), retractall(llegueEn(V,_)), assertz(llegueEn(V,L)), armarCamino3(V,F,T,C,[S|X]).
 
@@ -137,4 +134,4 @@ armarCamino3(S,F,T,C,X) :- vecinoEnOrden(S,F,V), movValido(V,T,X), length(X,L1),
 %% cuando Camino sea un camino desde Inicio hasta Fin pasando al mismo tiempo
 %% sólo por celdas transitables de ambos tableros.
 %% Nota: Es posible una implementación que resuelva en forma inmediata casos en los que trivialmente no existe camino dual posible.
-caminoDual(S,F,T1,T2,C) :- camino(S,F,T1,C),camino(S,F,T2,C).
+caminoDual(S,F,T1,T2,C) :- posValidaYLibre(S,T2),posValidaYLibre(F,T2),camino(S,F,T1,C),camino(S,F,T2,C).
