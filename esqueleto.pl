@@ -177,7 +177,7 @@ caminoDual(S,F,T1,T2,C) :- posValidaYLibre(S,T2),posValidaYLibre(F,T2),camino(S,
 
 %%%%%%%%%%%%%%%%%%%%%%%%
 %% Tests
-%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%i
 test(all) :- test(introductorios), test(caminos).
 
 test(introductorios) :- test(tablero), test(ocupar), test(vecino), test(vecino2), test(vecinoLibre).
