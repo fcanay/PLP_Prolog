@@ -168,6 +168,10 @@ armarCamino3(S,F,T,C,X) :- vecinoEnOrden(S,F,V), movValido(V,T,X), length(X,L1),
 %% cuando Camino sea un camino desde Inicio hasta Fin pasando al mismo tiempo
 %% sólo por celdas transitables de ambos tableros.
 %% Nota: Es posible una implementación que resuelva en forma inmediata casos en los que trivialmente no existe camino dual posible.
+
+%% Aclaracion: En este ejercicio usamos la funcion camino hecha en el ejercicio 5. Lo que agregamos es que se fije que los casilleros
+%% inicial y final sean validos en ambos tableros antes de empezar a buscar caminos. De esta manera si para alguno de los dos tableros
+%% no es valida alguna de esas dos posiciones, sabemos que no existe un camino y podemos terminar inmediatamente
 caminoDual(S,F,T1,T2,C) :- posValidaYLibre(S,T2),posValidaYLibre(F,T2),camino(S,F,T1,C),camino(S,F,T2,C).
 
 
