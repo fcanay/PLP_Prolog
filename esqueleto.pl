@@ -124,6 +124,12 @@ cantidadDeCaminos(S,F,T,N) :- aggregate_all(count, camino(S,F,T,_), N2), N is N2
 %% destino (distancia Manhattan). Por lo tanto, el predicado deberá devolver de a uno,
 %% todos los caminos pero en orden creciente de longitud. NO HACE ESTO!!! es una heuristica
 %% que trata pero no es perfecta
+%%Descripcion de la funcion: La funcion se fija que los dos extremos del camino esten libres y sean posiciones validas (que esten
+%%en el rango del tablero), luego arma el camino. La heuristica hace que primero se busque en direccion al estado final, esto lo hace
+%%primero en el eje 'x' y luego en el eje 'y'. Por ejemplo, si el casillero final esta a la derecha y abajo del casillero actual donde
+%%estoy y el casillero de la derecha esta disponible, voy a la derecha. Si no puedo ir a la derecha voy abajo, si no puedo ir abajo voy a
+%%la izquierda, y si no arriba (en ese orden de prioridades, este criterio se ve en la funcion vecinoEnOrden). De esta manera siempre se
+%%intenta tomar el camino mas directo posible al casillero final.
 camino2(S,F,T,C) :- posValidaYLibre(S,T), posValidaYLibre(F,T), armarCamino2(F,S,T,C,[]).
 
 %%ArmarCamino2(+Start, +Finish, +Tablero, -CaminoFinal, +CaminoParcial)
@@ -138,7 +144,14 @@ armarCamino2(S,F,T,C,X) :- vecinoEnOrden(S,F,V), movValido(V,T,X),armarCamino2(V
 %% entonces no tiene sentido seguir evaluando cualquier camino que implique llegar a la celda (3,4)
 %% desde Inicio en más de 6 pasos.
 %% Notar que dos ejecuciones de camino3/4 con los mismos argumentos deben dar los mismos resultados.
-%% En este ejercicio se permiten el uso de predicados: dynamic/1, asserta/1, assertz/1 y retractall/1.
+
+%% Descripcion de la funcion: En este ejercicio se permiten el uso de predicados: dynamic/1, asserta/1, assertz/1 y retractall/1.
+%% La idea de lo que hacemos en ejercicio es similar a la que hacemos en camino2 en cuanto la eleccion de por donde ir cuando se esta
+%% armando el camino. La diferencia esta en que reducimos el espacio de busqueda de la siguiente manera: Cuando llegamos a algun casillero
+%% del tablero mientras estamos construyendo el camino, nos fijamos que no haya otro camino donde hayamos llegado en menos pasos a ese
+%% mismo casillero. De ser asi, descartamos el camino que estabamos construyendo, hacemos esto porque siempre va a ser mejor tomar el otro
+%% camino hasta ese casillero, ya que llegamos en menos pasos. Para realizar esto usamos assertz para ir guardando en cuantos pasos
+%% llegamos a los casilleros.
 camino3(S,F,T,C) :-  retractall(llegueEn(_,_)),posValida(S,T), posValida(F,T), assertz(llegueEn(F,0)), armarCamino3(F,S,T,C,[]).
 
 %%ArmarCamino3(+Start, +Finish, +Tablero, -CaminoFinal, +CaminoParcial)
