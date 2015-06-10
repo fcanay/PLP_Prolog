@@ -5,16 +5,21 @@
 %%AUX
 
 %% posValida(+Pos, +T).
+%% Si la posicion esta dentro del rango del Tablero
 posValida(pos(F,C),T) :- F >= 0, C >= 0, numFilas(T,F1), F =< F1, numCol(T,C1), C =< C1.
 
-%%allOflenghth(+Lista, +Longitud).
+%%allOflenghth(+Listas, +Longitud).
+%%Listas es una lista de listas. El predicado busca si todas estas listas son de longitud Longitud
 allOflenghth([],_).
 allOflenghth([X|L],C) :- length(X,C), allOflenghth(L,C).
 
-%%numFilas(+Tablero, ?Longitud).
-numFilas(T,X) :- length(T,X).
 
 %%numFilas(+Tablero, ?Longitud).
+%%Cantidad de Filas de un tablero
+numFilas(T,X) :- length(T,X).
+
+%%numCol(+Tablero, ?Longitud).
+%%Cantidad de Columnas de un tablero
 numCol(T,X) :- last(T,L), length(L,X).
 
 %%posValidaYLibre(+Pos, +Tablero).
@@ -78,6 +83,8 @@ vecinoLibre(pos(F,C),T,V) :- vecino(pos(F,C),T,V), casilleroLibre(V,T).
 
 
 %%vecinoEnOrden(+Inicio, +Fin, -Vecino).
+%%Genera los vecinos de Inicio pero en el siguiente orden, siempre buscando primero acercarse a Fin
+%%Primero por el eje X y luego por el Y y para finalizar alejandose de Fin.
 vecinoEnOrden(pos(FS,CS),pos(FE,CE),V) :- X is FS - FE, Y is CS - CE, vecinoEnOrdenAux(pos(FS,CS),X,Y,V).
 
 
@@ -120,15 +127,11 @@ cantidadDeCaminos(S,F,T,N) :- aggregate_all(count, camino(S,F,T,_), N2), N is N2
 %% camino2(+Inicio, +Fin, +Tablero, -Camino) ídem camino/4 pero se espera una heurística
 %% que mejore las soluciones iniciales.
 %% No se espera que la primera solución sea necesariamente la mejor.
-%% Una solución es mejor mientras menos pasos se deba dar para llegar a
-%% destino (distancia Manhattan). Por lo tanto, el predicado deberá devolver de a uno,
-%% todos los caminos pero en orden creciente de longitud. NO HACE ESTO!!! es una heuristica
-%% que trata pero no es perfecta
-%%Descripcion de la funcion: La funcion se fija que los dos extremos del camino esten libres y sean posiciones validas (que esten
+%%Descripcion del predicado: El predicado se fija que los dos extremos del camino esten libres y sean posiciones validas (que esten
 %%en el rango del tablero), luego arma el camino. La heuristica hace que primero se busque en direccion al estado final, esto lo hace
 %%primero en el eje 'x' y luego en el eje 'y'. Por ejemplo, si el casillero final esta a la derecha y abajo del casillero actual donde
 %%estoy y el casillero de la derecha esta disponible, voy a la derecha. Si no puedo ir a la derecha voy abajo, si no puedo ir abajo voy a
-%%la izquierda, y si no arriba (en ese orden de prioridades, este criterio se ve en la funcion vecinoEnOrden). De esta manera siempre se
+%%la izquierda, y si no arriba (en ese orden de prioridades, este criterio se ve en el predicado vecinoEnOrden). De esta manera siempre se
 %%intenta tomar el camino mas directo posible al casillero final.
 camino2(S,F,T,C) :- posValidaYLibre(S,T), posValidaYLibre(F,T), armarCamino2(F,S,T,C,[]).
 
